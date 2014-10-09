@@ -3,6 +3,8 @@ using Sce.PlayStation.Core;
 using Sce.PlayStation.Core.Input;
 using Sce.PlayStation.Core.Graphics;
 
+using System.Collections.Generic;
+
 
 namespace Dtictactoe
 {
@@ -12,7 +14,7 @@ namespace Dtictactoe
 		public Matrix4 worldViewProj;
 		private Vector3 eye, center, up;
 		private GraphicsContext gc;
-		private float aspect, fov;
+		private float aspect, fov, near, far;
 		
 		private float epsilon = 0.01f;
 
@@ -26,8 +28,10 @@ namespace Dtictactoe
 		{
 			aspect = gc.Screen.AspectRatio;
 			fov = FMath.Radians(45.0f);
+			near = 1.0f;
+			far = 1000.0f;
 			
-			proj = Matrix4.Perspective(fov, aspect, 1.0f, 1000.0f);
+			proj = Matrix4.Perspective(fov, aspect, near, far);
 			
 			eye = new Vector3(0.0f, 0.0f, 10.0f);
 			center = new Vector3(0.0f, 0.0f, 0.0f);
@@ -41,10 +45,8 @@ namespace Dtictactoe
 			world = Matrix4.Identity;
 		}
 		
-		public void Update()
-		{
-			var gamePadData = GamePad.GetData (0);
-			
+		public void Update(GamePadData gamePadData, List<TouchData> touchDatalist)
+		{			
 			Vector2 inputVector;			
 			
 			if((gamePadData.ButtonsDown & GamePadButtons.Right) != 0){
@@ -71,6 +73,19 @@ namespace Dtictactoe
 			view = Matrix4.LookAt(eye, center, up);
 						
 			worldViewProj = proj * view * world;
+			
+			
+			foreach(TouchData touchData in touchDatalist)
+			{
+				var testZ = 0.5f;
+				var v = new Vector4(0, 0, testZ, 1.0f);
+				v = worldViewProj.Transform(v);
+				v = v.Divide(v.W);
+				var testV = new Vector4(touchData.X * 2, -touchData.Y * 2, v.Z, 1.0f);
+				testV = worldViewProj.Inverse().Transform(testV);
+				testV = testV.Divide(testV.W);
+			}
+			
 		}
 		
 /*		public Matrix4 WorldViewProj{

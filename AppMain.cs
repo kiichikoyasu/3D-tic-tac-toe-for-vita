@@ -52,7 +52,9 @@ namespace Dtictactoe
 		public static void Update ()
 		{
 			// Query gamepad for current state
-			var gamePadData = GamePad.GetData (0);
+			//inputの取得は1フレームに1回のみ
+			var gamePadData = GamePad.GetData(0);
+			var touchDataList = Touch.GetData(0);
 
 			//input処理
 			
@@ -63,11 +65,15 @@ namespace Dtictactoe
 				loop = false;
 				return;
 			}
-#endif			
+#endif		
 			
-			camera.Update();
-			cube.Update();
-			cube2.Update();
+			camera.Update(gamePadData, touchDataList);
+			foreach(TouchData touchData in touchDataList)
+			{
+			}
+			
+			cube.Update(gamePadData, touchDataList);
+			cube2.Update(gamePadData, touchDataList);
 			
 			/*本当はcamera.WorldViewProfをそのままrefしたい
 			 * シェーダーの中で書き換わった値を後で使う場合に困る*/

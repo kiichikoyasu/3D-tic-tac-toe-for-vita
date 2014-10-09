@@ -3,6 +3,8 @@ using Sce.PlayStation.Core;
 using Sce.PlayStation.Core.Input;
 using Sce.PlayStation.Core.Graphics;
 
+using System.Collections.Generic;
+
 namespace Dtictactoe
 {
 	public class Cube
@@ -50,7 +52,7 @@ namespace Dtictactoe
 		
 		public void Initialize()
 		{
-			size = 1.4f;
+			size = 1.0f;
 			scale = 1.0f;
 			vertexCount = 24;
 			vertexBuffer = new VertexBuffer(vertexCount, VertexFormat.Float3,
@@ -138,17 +140,21 @@ namespace Dtictactoe
 						
 		}
 		
-		public void Update()
-		{
-			var gamePadData = GamePad.GetData (0);
-			
+		public void Update(GamePadData gamePadData, List<TouchData> touchDataList)
+		{			
 			scale = 1.0f;
 			
 			if((gamePadData.Buttons & GamePadButtons.Circle) != 0)
 			{
-				scale = 1.2f;
+				scale = 1.3f;
 			}
 			
+			foreach(TouchData touchData in touchDataList)
+			{
+				if((touchData.Status & TouchStatus.Down) != 0)
+				{
+				}
+			}
 			 
 		}
 		
