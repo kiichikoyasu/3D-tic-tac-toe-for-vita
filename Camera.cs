@@ -1,5 +1,6 @@
 using System;
 using Sce.PlayStation.Core;
+using Sce.PlayStation.Core.Input;
 using Sce.PlayStation.Core.Graphics;
 
 
@@ -12,6 +13,9 @@ namespace Dtictactoe
 		private Vector3 eye, center, up;
 		private GraphicsContext gc;
 		private float aspect, fov;
+		
+		private float epsilon = 0.01f;
+
 
 		public Camera (GraphicsContext graphics)
 		{
@@ -39,6 +43,31 @@ namespace Dtictactoe
 		
 		public void Update()
 		{
+			var gamePadData = GamePad.GetData (0);
+			
+			Vector2 inputVector;			
+			
+			if((gamePadData.ButtonsDown & GamePadButtons.Right) != 0){
+				CalcPos(new Vector2(1.0f, 0.0f));
+			}
+			
+			if((gamePadData.ButtonsDown & GamePadButtons.Left) != 0){
+				CalcPos(new Vector2(-1.0f, 0.0f));
+			}
+			
+			if((gamePadData.ButtonsDown & GamePadButtons.Up) != 0){
+				CalcPos(new Vector2(0.0f, 1.0f));
+			}
+
+			if((gamePadData.ButtonsDown & GamePadButtons.Down) != 0){
+				CalcPos(new Vector2(0.0f, -1.0f));
+			}
+			
+			inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
+			if(inputVector.Length() > epsilon){
+				CalcPos(inputVector);
+			}
+			
 			view = Matrix4.LookAt(eye, center, up);
 						
 			worldViewProj = proj * view * world;
@@ -53,7 +82,7 @@ namespace Dtictactoe
 		/* カメラの注視点と注視点との距離を変えずにカメラの位置を移動するメソッド 
 		 * 画面上の入力と直観的に画面が動く
 		 * カメラは注視点を中心とした球面上を動く*/
-		public void CalcPos(Vector2 input2D){
+		private void CalcPos(Vector2 input2D){
 			
 			/*
 			 * カメラと注視点の距離

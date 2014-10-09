@@ -17,7 +17,6 @@ namespace Dtictactoe
 		
 		private static Camera camera;
 		
-		private static float epsilon = 0.01f;
 		private static bool loop = true;
 		
 		public static void Main (string[] args)
@@ -55,6 +54,8 @@ namespace Dtictactoe
 			// Query gamepad for current state
 			var gamePadData = GamePad.GetData (0);
 
+			//input処理
+			
 #if DEBUG			
 			if((gamePadData.Buttons & GamePadButtons.Start) != 0 &&  (gamePadData.Buttons & GamePadButtons.Select) != 0)
 			{
@@ -64,35 +65,9 @@ namespace Dtictactoe
 			}
 #endif			
 			
-			//input処理
-			
-			if((gamePadData.ButtonsDown & GamePadButtons.Start) != 0){
-			}
-			
-			Vector2 inputVector;
-			
-			if((gamePadData.ButtonsDown & GamePadButtons.Right) != 0){
-				camera.CalcPos(new Vector2(1.0f, 0.0f));
-			}
-			
-			if((gamePadData.ButtonsDown & GamePadButtons.Left) != 0){
-				camera.CalcPos(new Vector2(-1.0f, 0.0f));
-			}
-			
-			if((gamePadData.ButtonsDown & GamePadButtons.Up) != 0){
-				camera.CalcPos(new Vector2(0.0f, 1.0f));
-			}
-
-			if((gamePadData.ButtonsDown & GamePadButtons.Down) != 0){
-				camera.CalcPos(new Vector2(0.0f, -1.0f));
-			}
-			
-			inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
-			if(inputVector.Length() > epsilon){
-				camera.CalcPos(inputVector);
-			}
-			
 			camera.Update();
+			cube.Update();
+			cube2.Update();
 			
 			/*本当はcamera.WorldViewProfをそのままrefしたい
 			 * シェーダーの中で書き換わった値を後で使う場合に困る*/
