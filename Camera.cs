@@ -7,7 +7,8 @@ namespace Dtictactoe
 {
 	public class Camera
 	{
-		private Matrix4 view, proj, world, worldViewProj;
+		private Matrix4 view, proj, world;
+		public Matrix4 worldViewProj;
 		private Vector3 eye, center, up;
 		private GraphicsContext gc;
 		private float aspect, fov;
@@ -43,10 +44,10 @@ namespace Dtictactoe
 			worldViewProj = proj * view * world;
 		}
 		
-		public Matrix4 WorldViewProj{
+/*		public Matrix4 WorldViewProj{
 			set{worldViewProj = value;}
 			get{return worldViewProj;}
-		}
+		}*/
 		
 		
 		/* カメラの注視点と注視点との距離を変えずにカメラの位置を移動するメソッド 
@@ -59,7 +60,7 @@ namespace Dtictactoe
 			 * 計算誤差によって距離が変わらないように正規化してdistanceをかける*/
 			float distance = (eye - center).Length();
 			
-			//画面の入力ベクトルと画面の上ベクトルとの角度を出す
+			//画面の入力ベクトルと画面上の上ベクトルとの角度を出す
 			Vector2 upScreen = new Vector2(0.0f, 1.0f);
 			float inputAngle = upScreen.Angle(input2D);
 			Console.WriteLine("angle : " + inputAngle);
