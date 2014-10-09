@@ -1,8 +1,8 @@
 # binフォルダ
-.bin/
+bin/
 
 # objフォルダ
-.obj/
+obj/
 
 # プロジェクトファイル
 *.csproj
@@ -11,4 +11,4 @@
 *.pidb
 
 # アプリキー等？のxmlファイル
-.xml
+*.xml
