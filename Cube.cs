@@ -10,6 +10,9 @@ namespace Dtictactoe
 		private float y;
 		private float z;
 		
+		/* cube立方体1辺の長さ */
+		private float size;
+		
 		private GraphicsContext gc;
 		private VertexBuffer vertexBuffer;
 		private Texture2D texture;
@@ -32,8 +35,9 @@ namespace Dtictactoe
 			this.z = position.Z;
 		}
 		
-		public void init()
+		public void Initialize()
 		{
+			size = 2.0f;
 			vertexCount = 4;
 			vertexBuffer = new VertexBuffer(vertexCount, VertexFormat.Float3,
 			                                VertexFormat.Float2, VertexFormat.Float4);
@@ -41,10 +45,10 @@ namespace Dtictactoe
 			
 			vertexBuffer.SetVertices(0,
 			                         new float[]{
-				-1f, 1f, 0f,
-				-1f, -1f, 0f,
-				1f, 1f, 0f,
-				1f, -1f, 0f,
+				this.x - size / 2.0f , this.y + size / 2.0f, this.z,
+				this.x - size / 2.0f , this.y - size / 2.0f, this.z,
+				this.x + size / 2.0f , this.y + size / 2.0f, this.z,
+				this.x + size / 2.0f , this.y - size / 2.0f, this.z,
 			});
 			
 			vertexBuffer.SetVertices(1,
@@ -65,11 +69,11 @@ namespace Dtictactoe
 			
 		}
 		
-		public void update()
+		public void Update()
 		{
 		}
 		
-		public void render(ShaderProgram program)
+		public void Render(ShaderProgram program)
 		{
 			this.gc.SetVertexBuffer(0, vertexBuffer);
 			this.gc.SetTexture(0,texture);

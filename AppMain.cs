@@ -11,15 +11,17 @@ namespace Dtictactoe
 	public class AppMain
 	{
 		private static GraphicsContext graphics;
-		private static VertexBuffer vertexBuffer;
+//		private static VertexBuffer vertexBuffer;
 		private static ShaderProgram program;
-		private static Texture2D texture;
-		private static int vertexCount;
+//		private static Texture2D texture;
+//		private static int vertexCount;
 		
-		private static Matrix4 view, proj, world;
-		private static Vector3 eyePosition, centerPosition, cameraUpPosition;
+//		private static Matrix4 view, proj, world;
+//		private static Vector3 eyePosition, centerPosition, cameraUpPosition;
 		
-		private static Cube cube;
+		private static Cube cube, cube2;
+		
+		private static Camera camera;
 		
 		private static float epsilon = 0.01f;
 		
@@ -39,7 +41,13 @@ namespace Dtictactoe
 			// Set up the graphics system
 			graphics = new GraphicsContext ();
 			cube = new Cube(graphics, 0.0f, 0.0f, 0.0f);
-			cube.init();
+			cube.Initialize();
+			
+			cube2 = new Cube(graphics, 3.0f, 4.0f, -1.0f);
+			cube2.Initialize();
+			
+			camera = new Camera(graphics);
+			camera.Initialize();
 			
 			/*
 			vertexCount = 4;
@@ -76,7 +84,7 @@ namespace Dtictactoe
 			program = new ShaderProgram("/Application/shaders/VertexColor.cgx");
 			program.SetUniformBinding(0, "WorldViewProj");
 			
-			
+			/*
 			float aspect = graphics.Screen.AspectRatio;
 			float fov = FMath.Radians(45.0f);
 			
@@ -85,13 +93,14 @@ namespace Dtictactoe
 			eyePosition = new Vector3(0.0f, 0.0f, 10.0f);
 			centerPosition = new Vector3(0.0f, 0.0f, 0.0f);
 			cameraUpPosition = Vector3.UnitY;
+			*/
 			
 			/*CalcCameraPosメソッドにおいて注視点が原点じゃない時でも動くかテスト用*/
 /*			eyePosition = new Vector3(0.0f, 0.0f, 10.0f);
 			centerPosition = new Vector3(2.0f, 0.0f, 0.0f);
 			cameraUpPosition = new Vector3(0.0f, 1.0f, 0.0f);*/
 			
-			world = Matrix4.Identity;
+//			world = Matrix4.Identity;
 			
 			
 		}
@@ -106,36 +115,44 @@ namespace Dtictactoe
 			Vector2 inputVector;
 			
 			if((gamePadData.ButtonsDown & GamePadButtons.Right) != 0){
-				
-				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(1.0f, 0.0f));
+//				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(1.0f, 0.0f));
+				camera.CalcPos(new Vector2(1.0f, 0.0f));
 			}
 			
 			if((gamePadData.ButtonsDown & GamePadButtons.Left) != 0){
-				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(-1.0f, 0.0f));
+//				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(-1.0f, 0.0f));
+				camera.CalcPos(new Vector2(-1.0f, 0.0f));
 			}
 			
 			if((gamePadData.ButtonsDown & GamePadButtons.Up) != 0){
-				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(0.0f, 1.0f));
+//				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(0.0f, 1.0f));
+				camera.CalcPos(new Vector2(0.0f, 1.0f));
 			}
 
 			if((gamePadData.ButtonsDown & GamePadButtons.Down) != 0){
-				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(0.0f, -1.0f));
+//				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, new Vector2(0.0f, -1.0f));
+				camera.CalcPos(new Vector2(0.0f, -1.0f));
 			}
 			
 			inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
 			if(inputVector.Length() > epsilon){
-				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, inputVector);
+//				CalcCameraPos(ref eyePosition, ref cameraUpPosition, centerPosition, inputVector);
+				camera.CalcPos(inputVector);
 			}
 			
-			view = Matrix4.LookAt(
+/*			view = Matrix4.LookAt(
 				eyePosition,
 				centerPosition,
 				cameraUpPosition);
-			
-			
-			
+						
 			Matrix4 worldViewProj = proj * view * world;
+			*/
 			
+			camera.Update();
+			
+			/*本当はcamera.WorldViewProfをそのままrefしたい
+			 * シェーダーの中で書き換わった値を後で使う場合に困る*/
+			Matrix4 worldViewProj = camera.WorldViewProj;
 			program.SetUniformValue(0, ref worldViewProj);
 			
 			graphics.SetViewport(0, 0, graphics.Screen.Width, graphics.Screen.Height);
@@ -150,7 +167,8 @@ namespace Dtictactoe
 			graphics.SetClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 			graphics.Clear ();
 			
-			cube.render (program);
+			cube.Render (program);
+			cube2.Render (program);
 			/*
 			graphics.SetVertexBuffer(0, vertexBuffer);
 			graphics.SetTexture(0,texture);

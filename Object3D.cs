@@ -45,10 +45,10 @@ namespace Dtictactoe
 			get{return position.Z;}
 		}
 		
-		public abstract void init();
+		public abstract void Initialize();
 		
 		
-		public abstract void render();
+		public abstract void Render();
 		
 	}
 }
