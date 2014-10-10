@@ -22,15 +22,16 @@ namespace Dtictactoe
 			gc = graphics;
 		}
 		
-		public void Initialize()
+		public void Initialize(Texture2D texture, ShaderProgram program)
 		{
 			vertexCount = 4;
 			vertexBuffer = new VertexBuffer(vertexCount, VertexFormat.Float3,
 			                                VertexFormat.Float2, VertexFormat.Float4);
-			texture = new Texture2D("/Application/resources/test.png", false);
+			this.texture = texture;
 
-			program = new ShaderProgram("/Application/shaders/VertexColor.cgx");
-			program.SetUniformBinding(0, "WorldViewProj");			
+//			program = new ShaderProgram("/Application/shaders/VertexColor.cgx");
+			this.program = program;
+			this.program.SetUniformBinding(0, "WorldViewProj");			
 			
 			vertices = new float[]{
 				-1.0f, 1.0f, 0.0f,

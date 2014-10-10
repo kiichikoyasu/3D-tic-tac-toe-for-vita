@@ -48,30 +48,29 @@ namespace Dtictactoe
 			Triangle
 		}		
 		
-		public void Initialize()
+		public void Initialize(Texture2D texture, ShaderProgram program)
 		{
-			size = 1.2f;
+			size = GameParameters.CubeSize;
 			scale = 1.0f;
 			selectStatus = SelectStatus.None;
-			texture = new Texture2D("/Application/resources/white.png", false);
 			
 			front = new Plane(gc);
-			front.Initialize();
+			front.Initialize(texture, program);
 			
 			left = new Plane(gc);
-			left.Initialize();
+			left.Initialize(texture, program);
 			
 			back = new Plane(gc);
-			back.Initialize();
+			back.Initialize(texture, program);
 			
 			right = new Plane(gc);
-			right.Initialize();
+			right.Initialize(texture, program);
 			
 			top = new Plane(gc);
-			top.Initialize();		
+			top.Initialize(texture, program);		
 			
 			bottom = new Plane(gc);
-			bottom.Initialize();
+			bottom.Initialize(texture, program);
 		}
 		
 		public void Update(GamePadData gamePadData, List<TouchData> touchDataList)
@@ -80,7 +79,7 @@ namespace Dtictactoe
 			
 			if((gamePadData.Buttons & GamePadButtons.Circle) != 0)
 			{
-				scale = 1.3f;
+				scale = GameParameters.CubeScale;
 			}
 			
 			foreach(TouchData touchData in touchDataList)
