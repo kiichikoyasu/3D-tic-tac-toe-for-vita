@@ -8,6 +8,7 @@ namespace Dtictactoe
 		private static float cubeSize = 1.2f;
 		private static float cubeScale = 1.3f;
 		private static float cubeInterval = 2.85f;
+		private static int prevFrameSize = 10;
 		
 		public GameParameters ()
 		{
@@ -31,6 +32,11 @@ namespace Dtictactoe
 		public static float CubeInterval
 		{
 			get{return cubeInterval;}
+		}
+		
+		public static int PrevFrameSize
+		{
+			get{return prevFrameSize;}
 		}
 	}
 }

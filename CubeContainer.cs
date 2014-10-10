@@ -13,8 +13,9 @@ namespace Dtictactoe
 		private float interval;
 		private int gameSize;
 		private GraphicsContext gc;
-		private Texture2D texture;
+		private Texture2D[] textures;
 		private ShaderProgram program;
+		private int count = 0;
 		
 		public CubeContainer (GraphicsContext graphics)
 		{
@@ -27,7 +28,12 @@ namespace Dtictactoe
 			interval = GameParameters.CubeInterval;
 			var cubeSize = GameParameters.CubeSize;
 			gameSize = GameParameters.GameSize;
-			texture = new Texture2D("/Application/resources/test.png", false);
+			textures = new Texture2D[5];
+			textures[0] = new Texture2D("/Application/resources/test.png", false);
+			textures[1] = new Texture2D("/Application/resources/circle.png", false);
+			textures[2] = new Texture2D("/Application/resources/cross.png", false);
+			textures[3] = new Texture2D("/Application/resources/triangle.png", false);
+			textures[4] = new Texture2D("/Application/resources/square.png", false);
 //			var start = DateTime.Now;
 			program = new ShaderProgram("/Application/shaders/VertexColor.cgx");
 //			var end = DateTime.Now;
@@ -45,7 +51,7 @@ namespace Dtictactoe
 					{
 						var x = (float)(k - 1) * interval;
 						cubes[i, j, k] = new Cube(gc, x, y, z);
-						cubes[i, j, k].Initialize(texture, program);
+						cubes[i, j, k].Initialize(textures[0], program);
 					}
 				}
 			}
@@ -89,7 +95,8 @@ namespace Dtictactoe
 				{
 					/* 触ったcubeなし */
 				} else {
-					cubes[clickedX, clickedY, clickedZ].Clicked();
+					count++;
+					cubes[clickedX, clickedY, clickedZ].Clicked(textures[count % 4 + 1], (CubeStatus)(count % 4 + 1));
 //					Console.WriteLine(clickedX * 9 + clickedY * 3 + clickedZ);
 				}
 			}

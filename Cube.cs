@@ -16,7 +16,8 @@ namespace Dtictactoe
 		/* cube立方体1辺の長さ */
 		private float size;
 		private float scale;
-		private SelectStatus selectStatus;
+//		private SelectStatus selectStatus;
+		private CubeStatus status;
 		
 		private GraphicsContext gc;
 				
@@ -39,19 +40,20 @@ namespace Dtictactoe
 			this.z = position.Z;
 		}
 		
-		public enum SelectStatus {
+/*		public enum SelectStatus {
 			None,
 			Circle,
 			Cross,
 			Square,
 			Triangle
-		}		
+		}*/		
 		
 		public void Initialize(Texture2D texture, ShaderProgram program)
 		{
 			size = GameParameters.CubeSize;
 			scale = 1.0f;
-			selectStatus = SelectStatus.None;
+			status = CubeStatus.NotSelected;
+//			selectStatus = SelectStatus.None;
 			
 			front = new Plane(gc);
 			front.Initialize(texture, program);
@@ -78,28 +80,28 @@ namespace Dtictactoe
 			
 			if((gamePadData.Buttons & GamePadButtons.Circle) != 0)
 			{
-				if(selectStatus == SelectStatus.Circle){
+				if(status == CubeStatus.Circle){
 					scale = GameParameters.CubeScale;
 				}
 			}
 			
 			if((gamePadData.Buttons & GamePadButtons.Cross) != 0)
 			{
-				if(selectStatus == SelectStatus.Cross){
+				if(status == CubeStatus.Cross){
 					scale = GameParameters.CubeScale;
 				}
 			}
 			
 			if((gamePadData.Buttons & GamePadButtons.Square) != 0)
 			{
-				if(selectStatus == SelectStatus.Square){
+				if(status == CubeStatus.Square){
 					scale = GameParameters.CubeScale;
 				}
 			}
 			
 			if((gamePadData.Buttons & GamePadButtons.Triangle) != 0)
 			{
-				if(selectStatus == SelectStatus.Triangle){
+				if(status == CubeStatus.Triangle){
 					scale = GameParameters.CubeScale;
 				}
 			}
@@ -183,43 +185,44 @@ namespace Dtictactoe
 		 */
 		public float DistWithCamClicked(Vector3 touchPos)
 		{	
+			
 			/* rayと何枚衝突しているか */
 			var collisionPlane = 0;
 			
 			if(front.IsCollision(touchPos))
 			{
 				collisionPlane++;
-				Console.WriteLine("front touched!");
+//				Console.WriteLine("front touched!");
 			}
 			
 			if(left.IsCollision(touchPos))
 			{
 				collisionPlane++;
-				Console.WriteLine("left touched!");
+//				Console.WriteLine("left touched!");
 			}
 			
 			if(back.IsCollision(touchPos))
 			{
 				collisionPlane++;
-				Console.WriteLine("back touched!");
+//				Console.WriteLine("back touched!");
 			}
 			
 			if(right.IsCollision(touchPos))
 			{
 				collisionPlane++;
-				Console.WriteLine("right touched!");
+//				Console.WriteLine("right touched!");
 			}
 			
 			if(top.IsCollision(touchPos))
 			{
 				collisionPlane++;
-				Console.WriteLine("top touched!");
+//				Console.WriteLine("top touched!");
 			}
 			
 			if(bottom.IsCollision(touchPos))
 			{
 				collisionPlane++;
-				Console.WriteLine("bottom touched!");
+//				Console.WriteLine("bottom touched!");
 			}
 			
 //			Console.WriteLine(collisionPlane);
@@ -240,11 +243,23 @@ namespace Dtictactoe
 				return 0f;
 		}
 		
-		public void Clicked()
+		public void Clicked(Texture2D texture, CubeStatus status)
 		{
-			/* おそらくswitchで場合分け */
-			selectStatus = SelectStatus.Circle;
+			if(this.status == CubeStatus.NotSelected)
+			{
+				/* 新たに状態が変わるときのみ */
+				this.status = status;
+				
+				front.Texture = texture;
+				left.Texture = texture;
+				back.Texture = texture;
+				right.Texture = texture;
+				top.Texture = texture;
+				bottom.Texture = texture;
+			}
+				
 		}
+			
 	}
 }
 
