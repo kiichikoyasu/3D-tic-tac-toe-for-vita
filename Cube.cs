@@ -24,6 +24,8 @@ namespace Dtictactoe
 		private int vertexCount;
 		
 		private float[] vertices, texcoords, colors;
+		
+		private Plane front;
 
 		
 		public Cube (GraphicsContext graphics, float x, float y, float z)
@@ -59,6 +61,9 @@ namespace Dtictactoe
 			                                VertexFormat.Float2, VertexFormat.Float4);
 			selectStatus = SelectStatus.None;
 			texture = new Texture2D("/Application/resources/test.png", false);
+			
+			front = new Plane(gc);
+			front.Initialize();
 			
 			
 			texcoords = new float[]{
@@ -155,12 +160,23 @@ namespace Dtictactoe
 				{
 				}
 			}
+			front.Update();
 			 
 		}
 		
 		public void Render(ShaderProgram program)
 		{
 			var dispSize = size * scale;
+			
+			front.Vertices = new float[]{
+				5.0f + this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
+				5.0f + this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
+				5.0f + this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
+				5.0f + this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
+			};
+			
+			front.Render(program);
+
 			vertices = new float[]{
 				//front
 				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
@@ -219,6 +235,12 @@ namespace Dtictactoe
 			this.gc.DrawArrays(DrawMode.TriangleStrip, 20, 4);
 		}
 		
+		public bool isTouch(Vector3 cameraPos, Vector3 touchPos)
+		{
+			front.IsCollision(cameraPos, touchPos);
+			
+			return false;
+		}
 	}
 }
 

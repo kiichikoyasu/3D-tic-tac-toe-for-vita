@@ -77,13 +77,15 @@ namespace Dtictactoe
 			
 			foreach(TouchData touchData in touchDatalist)
 			{
-				var testZ = 0.5f;
-				var v = new Vector4(0, 0, testZ, 1.0f);
+/*				var testDepth = 0.5f;
+				var v = new Vector4(0, 0, testDepth, 1.0f);
 				v = worldViewProj.Transform(v);
 				v = v.Divide(v.W);
 				var testV = new Vector4(touchData.X * 2, -touchData.Y * 2, v.Z, 1.0f);
 				testV = worldViewProj.Inverse().Transform(testV);
 				testV = testV.Divide(testV.W);
+				Console.WriteLine(testV);
+				*/
 			}
 			
 		}
@@ -93,6 +95,10 @@ namespace Dtictactoe
 			get{return worldViewProj;}
 		}*/
 		
+		public Vector3 Eye
+		{
+			get{return eye;}
+		}
 		
 		/* カメラの注視点と注視点との距離を変えずにカメラの位置を移動するメソッド 
 		 * 画面上の入力と直観的に画面が動く

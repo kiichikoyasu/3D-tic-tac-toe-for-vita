@@ -70,6 +70,13 @@ namespace Dtictactoe
 			camera.Update(gamePadData, touchDataList);
 			foreach(TouchData touchData in touchDataList)
 			{
+				/* スクリーン上のタッチした点から画面に映し出されている範囲で一番奥の点を計算 */
+				var screenPos = new Vector4(touchData.X * 2, -touchData.Y * 2, 1.0f, 1.0f);
+				var touchLocalPos = camera.worldViewProj.Inverse().Transform(screenPos);
+				touchLocalPos = touchLocalPos.Divide(touchLocalPos.W);
+				Console.WriteLine(touchLocalPos);
+				cube.isTouch(camera.Eye, touchLocalPos.Xyz);
+				cube2.isTouch(camera.Eye, touchLocalPos.Xyz);
 			}
 			
 			cube.Update(gamePadData, touchDataList);
