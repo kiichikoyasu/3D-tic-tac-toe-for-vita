@@ -14,8 +14,6 @@ namespace Dtictactoe
 		
 		private static CubeContainer cubes;
 		
-//		private static Cube cube, cube2;
-		
 		private static Camera camera;
 		
 		private static bool loop = true;
@@ -35,12 +33,7 @@ namespace Dtictactoe
 		{
 			// Set up the graphics system
 			graphics = new GraphicsContext ();
-//			cube = new Cube(graphics, 0.0f, 0.0f, 0.0f);
-//			cube.Initialize();
-			
-//			cube2 = new Cube(graphics, 3.0f, 4.0f, -1.0f);
-//			cube2.Initialize();
-			
+
 			cubes = new CubeContainer(graphics);
 			cubes.Initialize();
 			
@@ -68,21 +61,7 @@ namespace Dtictactoe
 #endif		
 			
 			camera.Update(gamePadData, touchDataList);
-			foreach(TouchData touchData in touchDataList)
-			{
-				if(touchData.Status == TouchStatus.Up)
-				{
-					/* スクリーン上のタッチした点から画面に映し出されている範囲で一番奥の点を計算 */
-					var screenPos = new Vector4(touchData.X * 2, -touchData.Y * 2, 1.0f, 1.0f);
-					var touchLocalPos = Camera.worldViewProj.Inverse().Transform(screenPos);
-					touchLocalPos = touchLocalPos.Divide(touchLocalPos.W);
-//					cube.isTouch(touchLocalPos.Xyz);
-//					cube2.isTouch(touchLocalPos.Xyz);
-				}
-			}
 			
-//			cube.Update(gamePadData, touchDataList);
-//			cube2.Update(gamePadData, touchDataList);
 			cubes.Update(gamePadData, touchDataList);
 						
 			graphics.SetViewport(0, 0, graphics.Screen.Width, graphics.Screen.Height);
@@ -97,8 +76,6 @@ namespace Dtictactoe
 			graphics.SetClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 			graphics.Clear ();
 			
-//			cube.Render ();
-//			cube2.Render ();
 			cubes.Render();
 
 			// Present the screen

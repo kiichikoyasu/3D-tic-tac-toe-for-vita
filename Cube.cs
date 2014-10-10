@@ -19,7 +19,6 @@ namespace Dtictactoe
 		private SelectStatus selectStatus;
 		
 		private GraphicsContext gc;
-		private Texture2D texture;
 				
 		private Plane front, left, back, right, top, bottom;
 
@@ -79,15 +78,38 @@ namespace Dtictactoe
 			
 			if((gamePadData.Buttons & GamePadButtons.Circle) != 0)
 			{
-				scale = GameParameters.CubeScale;
+				if(selectStatus == SelectStatus.Circle){
+					scale = GameParameters.CubeScale;
+				}
 			}
 			
-			foreach(TouchData touchData in touchDataList)
+			if((gamePadData.Buttons & GamePadButtons.Cross) != 0)
+			{
+				if(selectStatus == SelectStatus.Cross){
+					scale = GameParameters.CubeScale;
+				}
+			}
+			
+			if((gamePadData.Buttons & GamePadButtons.Square) != 0)
+			{
+				if(selectStatus == SelectStatus.Square){
+					scale = GameParameters.CubeScale;
+				}
+			}
+			
+			if((gamePadData.Buttons & GamePadButtons.Triangle) != 0)
+			{
+				if(selectStatus == SelectStatus.Triangle){
+					scale = GameParameters.CubeScale;
+				}
+			}
+			
+/*			foreach(TouchData touchData in touchDataList)
 			{
 				if((touchData.Status & TouchStatus.Down) != 0)
 				{
 				}
-			}
+			}*/
 			
 			front.Update();
 			left.Update();
@@ -154,8 +176,13 @@ namespace Dtictactoe
 			
 		}
 		
-		public bool isTouch(Vector3 touchPos)
-		{
+		/**
+		 * cubeがクリックされたか調べる
+		 * クリックされていればカメラとの距離を返す
+		 * クリックされていなければ距離0を返す
+		 */
+		public float DistWithCamClicked(Vector3 touchPos)
+		{	
 			/* rayと何枚衝突しているか */
 			var collisionPlane = 0;
 			
@@ -195,21 +222,28 @@ namespace Dtictactoe
 				Console.WriteLine("bottom touched!");
 			}
 			
-			Console.WriteLine(collisionPlane);
+//			Console.WriteLine(collisionPlane);
 			
 			if (collisionPlane >= 2)
 			{
-				selectStatus = SelectStatus.Circle;
+//				selectStatus = SelectStatus.Circle;
+				/*
 				front.Texture = texture;
 				left.Texture = texture;
 				back.Texture = texture;
 				right.Texture = texture;
 				top.Texture = texture;
-				bottom.Texture = texture;
-				return true;
+				bottom.Texture = texture;*/
+				return new Vector3(x, y, z).Distance(Camera.Eye);
 			}
 			else
-				return false;
+				return 0f;
+		}
+		
+		public void Clicked()
+		{
+			/* おそらくswitchで場合分け */
+			selectStatus = SelectStatus.Circle;
 		}
 	}
 }
