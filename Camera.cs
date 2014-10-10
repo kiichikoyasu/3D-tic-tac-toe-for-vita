@@ -18,6 +18,8 @@ namespace Dtictactoe
 		
 		private float epsilon = 0.01f;
 
+		/* 前のフレームでタッチしたところを覚えておく */
+		private Vector2 prevPoint;
 
 		public Camera (GraphicsContext graphics)
 		{
@@ -43,6 +45,8 @@ namespace Dtictactoe
 			cameraUp = new Vector3(0.0f, 1.0f, 0.0f);*/
 			
 			world = Matrix4.Identity;
+			
+			prevPoint = new Vector2(0.0f, 0.0f);
 		}
 		
 		public void Update(GamePadData gamePadData, List<TouchData> touchDatalist)
@@ -66,27 +70,36 @@ namespace Dtictactoe
 			}
 			
 			inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
-			if(inputVector.Length() > epsilon){
+			if(inputVector.Length() > epsilon)
+			{
+				inputVector = inputVector.Normalize();
 				CalcPos(inputVector);
 			}
-			
-			view = Matrix4.LookAt(eye, center, up);
-						
-			worldViewProj = proj * view * world;
 			
 			
 			foreach(TouchData touchData in touchDatalist)
 			{
-/*				var testDepth = 0.5f;
-				var v = new Vector4(0, 0, testDepth, 1.0f);
-				v = worldViewProj.Transform(v);
-				v = v.Divide(v.W);
-				var testV = new Vector4(touchData.X * 2, -touchData.Y * 2, v.Z, 1.0f);
-				testV = worldViewProj.Inverse().Transform(testV);
-				testV = testV.Divide(testV.W);
-				Console.WriteLine(testV);
-				*/
+				if(touchData.Status == TouchStatus.Down)
+				{
+					prevPoint = new Vector2(touchData.X, -touchData.Y);
+				}
+				
+				if(touchData.Status == TouchStatus.Move)
+				{
+					var currentPoint = new Vector2(touchData.X, -touchData.Y);
+					inputVector = Vector2.Subtract(currentPoint, prevPoint);
+					if(inputVector.Length() > epsilon)
+					{
+						inputVector = inputVector.Normalize();
+						CalcPos(inputVector);
+					}
+					prevPoint = currentPoint;
+				}
 			}
+			
+			view = Matrix4.LookAt(eye, center, up);
+			
+			worldViewProj = proj * view * world;
 			
 		}
 		
@@ -113,19 +126,16 @@ namespace Dtictactoe
 			//画面の入力ベクトルと画面上の上ベクトルとの角度を出す
 			Vector2 upScreen = new Vector2(0.0f, 1.0f);
 			float inputAngle = upScreen.Angle(input2D);
-			Console.WriteLine("angle : " + inputAngle);
 			
 			//その角度分upベクトルを目線ベクトルを軸に回転させる（これが画面の中の世界での入力ベクトルになる）
 			Quaternion upQ = new Quaternion (up, 0.0f);
 			Quaternion rotationQ = Quaternion.RotationAxis(eye.Negate(), inputAngle);
 			Quaternion inputQ = rotationQ.Conjugate().Multiply(upQ).Multiply(rotationQ);
-			Console.WriteLine("inputVector in 3D : " + inputQ);
 			
 			float rotateAngle = input2D.Length() / 10.0f;
 			//入力ベクトルと目線ベクトルの法線を軸にカメラ位置とupベクトルを回転させる
 			Vector3 input3D = new Vector3(inputQ.X, inputQ.Y, inputQ.Z);
 			Vector3 rotationAxis = input3D.Cross(eye.Negate());
-			Console.WriteLine("camera rotation axis : " + rotationAxis);
 			rotationQ = Quaternion.RotationAxis(rotationAxis, rotateAngle);
 			
 			//カメラの注視点が原点でない場合は回転させてから戻す

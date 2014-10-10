@@ -165,7 +165,6 @@ namespace Dtictactoe
 			
 			if( c1.Dot(c2) > 0 && c2.Dot(c3) > 0 && c3.Dot(c4) > 0 )
 			{
-				Console.WriteLine("Touch!");
 				return true;
 			}
 			

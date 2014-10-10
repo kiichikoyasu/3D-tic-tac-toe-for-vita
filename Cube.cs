@@ -19,13 +19,9 @@ namespace Dtictactoe
 		private SelectStatus selectStatus;
 		
 		private GraphicsContext gc;
-		private VertexBuffer vertexBuffer;
 		private Texture2D texture;
-		private int vertexCount;
-		
-		private float[] vertices, texcoords, colors;
-		
-		private Plane front;
+				
+		private Plane front, left, back, right, top, bottom;
 
 		
 		public Cube (GraphicsContext graphics, float x, float y, float z)
@@ -54,95 +50,28 @@ namespace Dtictactoe
 		
 		public void Initialize()
 		{
-			size = 1.0f;
+			size = 1.2f;
 			scale = 1.0f;
-			vertexCount = 24;
-			vertexBuffer = new VertexBuffer(vertexCount, VertexFormat.Float3,
-			                                VertexFormat.Float2, VertexFormat.Float4);
 			selectStatus = SelectStatus.None;
-			texture = new Texture2D("/Application/resources/test.png", false);
+			texture = new Texture2D("/Application/resources/white.png", false);
 			
 			front = new Plane(gc);
 			front.Initialize();
 			
+			left = new Plane(gc);
+			left.Initialize();
 			
-			texcoords = new float[]{
-				//front
-				0.0f, 0.0f,
-				0.0f, 1.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f,
-				
-				//left
-				0.0f, 0.0f,
-				0.0f, 1.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f,
-				
-				//back
-				0.0f, 0.0f,
-				0.0f, 1.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f,
-				
-				//right
-				0.0f, 0.0f,
-				0.0f, 1.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f,
-				
-				//top
-				0.0f, 0.0f,
-				0.0f, 1.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f,
-				
-				//bottom
-				0.0f, 0.0f,
-				0.0f, 1.0f,
-				1.0f, 0.0f,
-				1.0f, 1.0f,
-
-			};
+			back = new Plane(gc);
+			back.Initialize();
 			
-			colors =  new float[]{
-				//front
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				
-				//left
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				
-				//back
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				
-				//right
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				
-				//top
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				
-				//bottom
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-				1f, 1f, 1f, 1f,
-			};
-						
+			right = new Plane(gc);
+			right.Initialize();
+			
+			top = new Plane(gc);
+			top.Initialize();		
+			
+			bottom = new Plane(gc);
+			bottom.Initialize();
 		}
 		
 		public void Update(GamePadData gamePadData, List<TouchData> touchDataList)
@@ -160,8 +89,14 @@ namespace Dtictactoe
 				{
 				}
 			}
+			
 			front.Update();
-			 
+			left.Update();
+			back.Update();
+			right.Update();
+			top.Update();
+			bottom.Update();
+			
 		}
 		
 		public void Render(ShaderProgram program)
@@ -169,77 +104,104 @@ namespace Dtictactoe
 			var dispSize = size * scale;
 			
 			front.Vertices = new float[]{
-				5.0f + this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
-				5.0f + this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
-				5.0f + this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
-				5.0f + this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
+				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
+				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
+				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
+				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
 			};
+			
+			left.Vertices = new float[]{
+				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左上
+				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左下
+				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
+				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
+			};				
+			
+			back.Vertices = new float[]{
+				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右上
+				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右下
+				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左上
+				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左下
+			};
+			
+			right.Vertices = new float[]{
+				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
+				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
+				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右上
+				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右下
+			};
+			
+			top.Vertices = new float[]{
+				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左上
+				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
+				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右上
+				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
+			};
+			
+			bottom.Vertices = new float[]{
+				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
+				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左下
+				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
+				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右下
+			};
+				
 			
 			front.Render(program);
-
-			vertices = new float[]{
-				//front
-				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
-				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
-				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
-				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
-				
-				//left
-				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左上
-				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左下
-				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
-				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
-				
-				//back
-				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右上
-				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右下
-				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左上
-				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左下
-				
-				//right
-				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
-				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
-				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右上
-				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右下
-				
-				//top
-				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左上
-				this.x - dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左上
-				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右上
-				this.x + dispSize / 2.0f , this.y + dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右上
-				
-				//bottom
-				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前左下
-				this.x - dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥左下
-				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z + dispSize / 2.0f,//手前右下
-				this.x + dispSize / 2.0f , this.y - dispSize / 2.0f, this.z - dispSize / 2.0f,//奥右下
-			};
+			left.Render(program);
+			back.Render(program);
+			right.Render(program);
+			top.Render(program);
+			bottom.Render(program);
 			
-			
-			vertexBuffer.SetVertices(0, vertices);
-			vertexBuffer.SetVertices(1, texcoords);
-			vertexBuffer.SetVertices(2, colors);
-
-			
-			this.gc.SetVertexBuffer(0, vertexBuffer);
-			this.gc.SetTexture(0,texture);
-			this.gc.SetShaderProgram(program);
-			
-			this.gc.Enable(EnableMode.DepthTest);
-			
-			this.gc.DrawArrays(DrawMode.TriangleStrip, 0, 4);
-			this.gc.DrawArrays(DrawMode.TriangleStrip, 4, 4);
-			this.gc.DrawArrays(DrawMode.TriangleStrip, 8, 4);
-			this.gc.DrawArrays(DrawMode.TriangleStrip, 12, 4);
-			this.gc.DrawArrays(DrawMode.TriangleStrip, 16, 4);
-			this.gc.DrawArrays(DrawMode.TriangleStrip, 20, 4);
 		}
 		
 		public bool isTouch(Vector3 cameraPos, Vector3 touchPos)
 		{
-			front.IsCollision(cameraPos, touchPos);
+			/* rayと何枚衝突しているか */
+			var collisionPlane = 0;
 			
-			return false;
+			if(front.IsCollision(cameraPos, touchPos))
+			{
+				collisionPlane++;
+				Console.WriteLine("front touched!");
+			}
+			
+			if(left.IsCollision(cameraPos, touchPos))
+			{
+				collisionPlane++;
+				Console.WriteLine("left touched!");
+			}
+			
+			if(back.IsCollision(cameraPos, touchPos))
+			{
+				collisionPlane++;
+				Console.WriteLine("back touched!");
+			}
+			
+			if(right.IsCollision(cameraPos, touchPos))
+			{
+				collisionPlane++;
+				Console.WriteLine("right touched!");
+			}
+			
+			if(top.IsCollision(cameraPos, touchPos))
+			{
+				collisionPlane++;
+				Console.WriteLine("top touched!");
+			}
+			
+			if(bottom.IsCollision(cameraPos, touchPos))
+			{
+				collisionPlane++;
+				Console.WriteLine("bottom touched!");
+			}
+			
+			Console.WriteLine(collisionPlane);
+			
+			if (collisionPlane >= 2)
+				return true;
+			else
+				return false;
 		}
 	}
 }
