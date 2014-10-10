@@ -59,7 +59,8 @@ namespace Dtictactoe
 			//input処理
 			
 #if DEBUG			
-			if((gamePadData.Buttons & GamePadButtons.Start) != 0 &&  (gamePadData.Buttons & GamePadButtons.Select) != 0)
+			if((gamePadData.Buttons & GamePadButtons.Start) != 0 &&
+			   (gamePadData.Buttons & GamePadButtons.Select) != 0)
 			{
 				Console.WriteLine("exit."); 
 				loop = false;
@@ -76,6 +77,7 @@ namespace Dtictactoe
 					var screenPos = new Vector4(touchData.X * 2, -touchData.Y * 2, 1.0f, 1.0f);
 					var touchLocalPos = camera.worldViewProj.Inverse().Transform(screenPos);
 					touchLocalPos = touchLocalPos.Divide(touchLocalPos.W);
+					Console.WriteLine(touchLocalPos);
 					cube.isTouch(camera.Eye, touchLocalPos.Xyz);
 					cube2.isTouch(camera.Eye, touchLocalPos.Xyz);
 				}

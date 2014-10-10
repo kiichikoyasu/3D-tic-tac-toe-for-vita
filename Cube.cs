@@ -199,7 +199,16 @@ namespace Dtictactoe
 			Console.WriteLine(collisionPlane);
 			
 			if (collisionPlane >= 2)
+			{
+				selectStatus = SelectStatus.Circle;
+				front.Texture = texture;
+				left.Texture = texture;
+				back.Texture = texture;
+				right.Texture = texture;
+				top.Texture = texture;
+				bottom.Texture = texture;
 				return true;
+			}
 			else
 				return false;
 		}

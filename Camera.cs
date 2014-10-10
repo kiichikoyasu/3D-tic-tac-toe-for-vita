@@ -88,6 +88,7 @@ namespace Dtictactoe
 				{
 					var currentPoint = new Vector2(touchData.X, -touchData.Y);
 					inputVector = Vector2.Subtract(currentPoint, prevPoint);
+					/* touchはスティックに比べて値が小さいのでepsilonの調整余地あり */
 					if(inputVector.Length() > epsilon)
 					{
 						inputVector = inputVector.Normalize();
