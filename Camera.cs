@@ -11,8 +11,8 @@ namespace Dtictactoe
 	public class Camera
 	{
 		private Matrix4 view, proj, world;
-		public Matrix4 worldViewProj;
-		private Vector3 eye, center, up;
+		public static Matrix4 worldViewProj;
+		private static Vector3 eye, center, up;
 		private GraphicsContext gc;
 		private float aspect, fov, near, far;
 		
@@ -109,7 +109,7 @@ namespace Dtictactoe
 			get{return worldViewProj;}
 		}*/
 		
-		public Vector3 Eye
+		public static Vector3 Eye
 		{
 			get{return eye;}
 		}

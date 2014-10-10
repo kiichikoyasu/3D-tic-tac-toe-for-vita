@@ -7,6 +7,7 @@ namespace Dtictactoe
 	public class Plane
 	{
 		private GraphicsContext gc;
+		private ShaderProgram program;
 		private VertexBuffer vertexBuffer;
 		private Texture2D texture;
 		private int vertexCount;
@@ -27,6 +28,9 @@ namespace Dtictactoe
 			vertexBuffer = new VertexBuffer(vertexCount, VertexFormat.Float3,
 			                                VertexFormat.Float2, VertexFormat.Float4);
 			texture = new Texture2D("/Application/resources/test.png", false);
+
+			program = new ShaderProgram("/Application/shaders/VertexColor.cgx");
+			program.SetUniformBinding(0, "WorldViewProj");			
 			
 			vertices = new float[]{
 				-1.0f, 1.0f, 0.0f,
@@ -61,9 +65,11 @@ namespace Dtictactoe
 		
 		public void Update()
 		{
+			/* プロパティは直接ref引数に渡せないので無理やりフィールドを読むようにした*/
+			program.SetUniformValue(0, ref Camera.worldViewProj);
 		}
 		
-		public void Render(ShaderProgram program)
+		public void Render()
 		{
 			vertexBuffer.SetVertices(0, vertices);
 			vertexBuffer.SetVertices(1, texcoords);
@@ -137,8 +143,10 @@ namespace Dtictactoe
 			set{texture = value;}
 		}
 		
-		public bool IsCollision(Vector3 cameraPos, Vector3 touchPos)
+		public bool IsCollision(Vector3 touchPos)
 		{
+			var cameraPos = Camera.Eye;
+			
 			/* rayはカメラからタッチした点までの方向ベクトル */
 			var ray = Vector3.Subtract(touchPos, cameraPos);
 			

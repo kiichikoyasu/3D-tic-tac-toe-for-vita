@@ -99,7 +99,7 @@ namespace Dtictactoe
 			
 		}
 		
-		public void Render(ShaderProgram program)
+		public void Render()
 		{
 			var dispSize = size * scale;
 			
@@ -146,51 +146,51 @@ namespace Dtictactoe
 			};
 				
 			
-			front.Render(program);
-			left.Render(program);
-			back.Render(program);
-			right.Render(program);
-			top.Render(program);
-			bottom.Render(program);
+			front.Render();
+			left.Render();
+			back.Render();
+			right.Render();
+			top.Render();
+			bottom.Render();
 			
 		}
 		
-		public bool isTouch(Vector3 cameraPos, Vector3 touchPos)
+		public bool isTouch(Vector3 touchPos)
 		{
 			/* rayと何枚衝突しているか */
 			var collisionPlane = 0;
 			
-			if(front.IsCollision(cameraPos, touchPos))
+			if(front.IsCollision(touchPos))
 			{
 				collisionPlane++;
 				Console.WriteLine("front touched!");
 			}
 			
-			if(left.IsCollision(cameraPos, touchPos))
+			if(left.IsCollision(touchPos))
 			{
 				collisionPlane++;
 				Console.WriteLine("left touched!");
 			}
 			
-			if(back.IsCollision(cameraPos, touchPos))
+			if(back.IsCollision(touchPos))
 			{
 				collisionPlane++;
 				Console.WriteLine("back touched!");
 			}
 			
-			if(right.IsCollision(cameraPos, touchPos))
+			if(right.IsCollision(touchPos))
 			{
 				collisionPlane++;
 				Console.WriteLine("right touched!");
 			}
 			
-			if(top.IsCollision(cameraPos, touchPos))
+			if(top.IsCollision(touchPos))
 			{
 				collisionPlane++;
 				Console.WriteLine("top touched!");
 			}
 			
-			if(bottom.IsCollision(cameraPos, touchPos))
+			if(bottom.IsCollision(touchPos))
 			{
 				collisionPlane++;
 				Console.WriteLine("bottom touched!");
