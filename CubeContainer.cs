@@ -54,53 +54,46 @@ namespace Dtictactoe
 		
 		public void Update(GamePadData gamePadData, List<TouchData> touchDataList)
 		{
+//			Console.WriteLine(ContainStatusPrev(touchDataList, TouchStatus.Down));
 			
-			foreach(TouchData touchData in touchDataList)
+			var touchData = touchDataList[touchDataList.Count - 1];
+			if(touchData.Status == TouchStatus.Up && ContainStatusPrev(touchDataList, TouchStatus.Down))
 			{
-				if(touchData.Status == TouchStatus.Up)
+				/* 今回のフレームで指が離れ、かつ指が押されたのが特定フレーム以内であればクリックとみなす */
+				float minDist = float.PositiveInfinity;
+				int clickedX = 0, clickedY = 0, clickedZ = 0;
+				/* スクリーン上のタッチした点から画面に映し出されている範囲で一番奥の点を計算 */
+				var screenPos = new Vector4(touchData.X * 2, -touchData.Y * 2, 1.0f, 1.0f);
+				var touchLocalPos = Camera.worldViewProj.Inverse().Transform(screenPos);
+				touchLocalPos = touchLocalPos.Divide(touchLocalPos.W);
+				for(int i = 0; i < gameSize; i++)
 				{
-					if(touchData.ID != 0)
+					for(int j = 0; j < gameSize; j++)
 					{
-						/* 指1本だけ対応 */
-						continue;
-					}
-					
-					float minDist = float.PositiveInfinity;
-					int clickedX = 0, clickedY = 0, clickedZ = 0;
-					/* スクリーン上のタッチした点から画面に映し出されている範囲で一番奥の点を計算 */
-					var screenPos = new Vector4(touchData.X * 2, -touchData.Y * 2, 1.0f, 1.0f);
-					var touchLocalPos = Camera.worldViewProj.Inverse().Transform(screenPos);
-					touchLocalPos = touchLocalPos.Divide(touchLocalPos.W);
-					for(int i = 0; i < gameSize; i++)
-					{
-						for(int j = 0; j < gameSize; j++)
+						for(int k = 0; k < gameSize; k++)
 						{
-							for(int k = 0; k < gameSize; k++)
+							float dist;
+							if((dist = cubes[i, j, k].DistWithCamClicked(touchLocalPos.Xyz)) > 0f)
 							{
-								float dist;
-								if((dist = cubes[i, j, k].DistWithCamClicked(touchLocalPos.Xyz)) > 0f)
-								{
-									/* cubeが触った直線状にいる場合 */
-									if(dist < minDist){
-										minDist = dist;
-										clickedX = i; clickedY = j; clickedZ = k;
-									}
+								/* cubeが触った直線状にいる場合 */
+								if(dist < minDist){
+									minDist = dist;
+									clickedX = i; clickedY = j; clickedZ = k;
 								}
 							}
 						}
 					}
-					
-					if(float.IsPositiveInfinity(minDist))
-					{
-						/* 触ったcubeなし */
-					} else {
-						cubes[clickedX, clickedY, clickedZ].Clicked();
-						Console.WriteLine(clickedX * 9 + clickedY * 3 + clickedZ);
-					}
 				}
-
+				
+				if(float.IsPositiveInfinity(minDist))
+				{
+					/* 触ったcubeなし */
+				} else {
+					cubes[clickedX, clickedY, clickedZ].Clicked();
+//					Console.WriteLine(clickedX * 9 + clickedY * 3 + clickedZ);
+				}
 			}
-			
+
 			
 			/* cube自身のupdate */
 			for(int i = 0; i < gameSize; i++)
@@ -134,7 +127,15 @@ namespace Dtictactoe
 			}
 		}
 		
-		
+		private bool ContainStatusPrev (List<TouchData> list, TouchStatus queryStatus)
+		{
+			bool isContain = false;
+			foreach(TouchData data in list)
+			{
+				isContain |= data.Status == queryStatus;
+			}
+			return isContain;
+		}
 	}
 }
 

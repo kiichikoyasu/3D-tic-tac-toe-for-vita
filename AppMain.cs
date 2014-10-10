@@ -18,6 +18,9 @@ namespace Dtictactoe
 		
 		private static bool loop = true;
 		
+		/* 直近フレームの指id = 0のTouchDataのリスト */
+		private static List<TouchData> prevTouchDataList;
+		
 		public static void Main (string[] args)
 		{
 			Initialize ();
@@ -39,6 +42,8 @@ namespace Dtictactoe
 			
 			camera = new Camera(graphics);
 			camera.Initialize();
+			
+			prevTouchDataList = new List<TouchData>();
 		}
 
 		public static void Update ()
@@ -60,9 +65,38 @@ namespace Dtictactoe
 			}
 #endif		
 			
-			camera.Update(gamePadData, touchDataList);
+			if(touchDataList.Count == 0)
+			{
+				/* タッチがなかったとき */
+				var nonTouchData = new TouchData();
+				nonTouchData.Status = TouchStatus.None;
+				prevTouchDataList.Add(nonTouchData);
+			}
 			
-			cubes.Update(gamePadData, touchDataList);
+			foreach(TouchData touchData in touchDataList)
+			{
+				if(touchData.ID != 0)
+				{
+					/* 指1本だけ対応 */
+					continue;
+				}
+				prevTouchDataList.Add(touchData);
+			}
+			
+			if(prevTouchDataList.Count > GameParameters.PrevFrameSize)
+			{
+				prevTouchDataList.RemoveAt(0);
+			}
+			
+/*			for(int i = 0; i < prevTouchDataList.Count; i++)
+			{
+				Console.Write(prevTouchDataList[i].Status);
+			}
+			Console.WriteLine("");*/
+			
+			camera.Update(gamePadData, prevTouchDataList);
+			
+			cubes.Update(gamePadData, prevTouchDataList);
 						
 			graphics.SetViewport(0, 0, graphics.Screen.Width, graphics.Screen.Height);
 			

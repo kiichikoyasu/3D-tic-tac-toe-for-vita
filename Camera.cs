@@ -49,7 +49,7 @@ namespace Dtictactoe
 			prevPoint = new Vector2(0.0f, 0.0f);
 		}
 		
-		public void Update(GamePadData gamePadData, List<TouchData> touchDatalist)
+		public void Update(GamePadData gamePadData, List<TouchData> touchDataList)
 		{			
 			Vector2 inputVector;			
 			
@@ -77,26 +77,26 @@ namespace Dtictactoe
 			}
 			
 			
-			foreach(TouchData touchData in touchDatalist)
+			/* 今フレームのタッチ情報を取得 */	
+			var touchData = touchDataList[touchDataList.Count - 1];
+			if(touchData.Status == TouchStatus.Down)
 			{
-				if(touchData.Status == TouchStatus.Down)
-				{
-					prevPoint = new Vector2(touchData.X, -touchData.Y);
-				}
-				
-				if(touchData.Status == TouchStatus.Move)
-				{
-					var currentPoint = new Vector2(touchData.X, -touchData.Y);
-					inputVector = Vector2.Subtract(currentPoint, prevPoint);
-					/* touchはスティックに比べて値が小さいのでepsilonの調整余地あり */
-					if(inputVector.Length() > epsilon)
-					{
-						inputVector = inputVector.Normalize();
-						CalcPos(inputVector);
-					}
-					prevPoint = currentPoint;
-				}
+				prevPoint = new Vector2(touchData.X, -touchData.Y);
 			}
+			
+			if(touchData.Status == TouchStatus.Move)
+			{
+				var currentPoint = new Vector2(touchData.X, -touchData.Y);
+				inputVector = Vector2.Subtract(currentPoint, prevPoint);
+				/* touchはスティックに比べて値が小さいのでepsilonの調整余地あり */
+				if(inputVector.Length() > epsilon)
+				{
+					inputVector = inputVector.Normalize();
+					CalcPos(inputVector);
+				}
+				prevPoint = currentPoint;
+			}
+			
 			
 			view = Matrix4.LookAt(eye, center, up);
 			
