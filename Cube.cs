@@ -74,7 +74,7 @@ namespace Dtictactoe
 			bottom.Initialize(texture, program);
 		}
 		
-		public void Update(GamePadData gamePadData, List<TouchData> touchDataList)
+		public void Update(GamePadData gamePadData, TouchDataList touchDataList)
 		{			
 			scale = 1.0f;
 			
@@ -106,12 +106,6 @@ namespace Dtictactoe
 				}
 			}
 			
-/*			foreach(TouchData touchData in touchDataList)
-			{
-				if((touchData.Status & TouchStatus.Down) != 0)
-				{
-				}
-			}*/
 			
 			front.Update();
 			left.Update();
@@ -179,68 +173,63 @@ namespace Dtictactoe
 		}
 		
 		/**
+		 * cubeがrayと当たっているか調べる
+		 * 当たっていればrayの始点との距離を返す
+		 * 当たっていなければ距離0を返す
+		 */
+
+		public float DistWithRayStartClicked (Vector3 rayStart, Vector3 rayEnd)
+		{
+			/* rayと何枚衝突しているか */
+			var collisionPlane = 0;
+			
+			if(front.IsCollision(rayStart, rayEnd))
+			{
+				collisionPlane++;
+			}
+			
+			if(left.IsCollision(rayStart, rayEnd))
+			{
+				collisionPlane++;
+			}
+			
+			if(back.IsCollision(rayStart, rayEnd))
+			{
+				collisionPlane++;
+			}
+			
+			if(right.IsCollision(rayStart, rayEnd))
+			{
+				collisionPlane++;
+			}
+			
+			if(top.IsCollision(rayStart, rayEnd))
+			{
+				collisionPlane++;
+			}
+			
+			if(bottom.IsCollision(rayStart, rayEnd))
+			{
+				collisionPlane++;
+			}
+			
+			
+			if (collisionPlane >= 2)
+			{
+				return new Vector3(x, y, z).Distance(rayStart);
+			}
+			else
+				return 0f;
+		}
+		
+		/**
 		 * cubeがクリックされたか調べる
 		 * クリックされていればカメラとの距離を返す
 		 * クリックされていなければ距離0を返す
 		 */
 		public float DistWithCamClicked(Vector3 touchPos)
 		{	
-			
-			/* rayと何枚衝突しているか */
-			var collisionPlane = 0;
-			
-			if(front.IsCollision(touchPos))
-			{
-				collisionPlane++;
-//				Console.WriteLine("front touched!");
-			}
-			
-			if(left.IsCollision(touchPos))
-			{
-				collisionPlane++;
-//				Console.WriteLine("left touched!");
-			}
-			
-			if(back.IsCollision(touchPos))
-			{
-				collisionPlane++;
-//				Console.WriteLine("back touched!");
-			}
-			
-			if(right.IsCollision(touchPos))
-			{
-				collisionPlane++;
-//				Console.WriteLine("right touched!");
-			}
-			
-			if(top.IsCollision(touchPos))
-			{
-				collisionPlane++;
-//				Console.WriteLine("top touched!");
-			}
-			
-			if(bottom.IsCollision(touchPos))
-			{
-				collisionPlane++;
-//				Console.WriteLine("bottom touched!");
-			}
-			
-//			Console.WriteLine(collisionPlane);
-			
-			if (collisionPlane >= 2)
-			{
-//				selectStatus = SelectStatus.Circle;
-				/*
-				front.Texture = texture;
-				left.Texture = texture;
-				back.Texture = texture;
-				right.Texture = texture;
-				top.Texture = texture;
-				bottom.Texture = texture;*/
-				return new Vector3(x, y, z).Distance(Camera.Eye);
-			}
-			else
-				return 0f;
+			return DistWithRayStartClicked (Camera.Eye, touchPos);
 		}
 		
 		public void Clicked(Texture2D texture, CubeStatus status)
@@ -258,6 +247,28 @@ namespace Dtictactoe
 				bottom.Texture = texture;
 			}
 				
+		}
+		
+		public CubeStatus Status
+		{
+			get{return status;}
+		}
+		
+		public void Reset(Texture2D texture)
+		{
+			status = CubeStatus.NotSelected;
+			front.Texture = texture;
+			front.Update();
+			left.Texture = texture;
+			left.Update();
+			back.Texture = texture;
+			back.Update();
+			right.Texture = texture;
+			right.Update();
+			top.Texture = texture;
+			top.Update();
+			bottom.Texture = texture;
+			bottom.Update();
 		}
 			
 	}

@@ -12,14 +12,25 @@ namespace Dtictactoe
 	{
 		private static GraphicsContext graphics;
 		
+		public static int count;
+		
 		private static CubeContainer cubes;
 		
 		private static Camera camera;
 		
-		private static bool loop = true;
+		public static GameStatus gameStatus;
 		
-		/* 直近フレームの指id = 0のTouchDataのリスト */
-		private static List<TouchData> prevTouchDataList;
+	 	private static Player[] players;
+		private static Player currentPlayre;
+		
+		private static Dialog dialog;
+		
+		private static bool loop = true;
+		private static bool isCameraUpdate = true, isCubeUpdate = true;
+		
+		private static TouchDataList touchDataList;
+
+		private static float epsilon = 0.01f;
 		
 		public static void Main (string[] args)
 		{
@@ -32,10 +43,31 @@ namespace Dtictactoe
 			}
 		}
 
+		static void MakeOrder ()
+		{
+			var random = new Random();
+			int order = 1;
+			while(order < 5)
+			{
+				var rdm = random.Next(4);
+				if(players[rdm].order == 0)
+				{
+					players[rdm].order = order;
+					order++;
+				}
+			}
+			for(int i = 0; i < 4; i++)
+			{
+				Logger.GameInfoLine(players[i].order);
+			}
+		}
+
 		public static void Initialize ()
 		{
 			// Set up the graphics system
 			graphics = new GraphicsContext ();
+			
+			count = 0;
 
 			cubes = new CubeContainer(graphics);
 			cubes.Initialize();
@@ -43,7 +75,28 @@ namespace Dtictactoe
 			camera = new Camera(graphics);
 			camera.Initialize();
 			
-			prevTouchDataList = new List<TouchData>();
+			gameStatus = GameStatus.Start;
+			
+			players = new Player[4];
+			for(int i = 0; i < 4 ; i++)
+			{
+				players[i] = new Player();
+				players[i].id = i;
+			}
+			players[0].isHuman = true;
+			players[1].isHuman = false;
+			players[2].isHuman = false;
+			players[3].isHuman = false;
+			
+			/* 順番決め */
+//			MakeOrder ();
+			
+			
+			
+			dialog = new Dialog(graphics);
+			dialog.Initialize(new Texture2D("/Application/resources/test.png", false));
+			
+			touchDataList = new TouchDataList();
 		}
 
 		public static void Update ()
@@ -51,55 +104,186 @@ namespace Dtictactoe
 			// Query gamepad for current state
 			//inputの取得は1フレームに1回のみ
 			var gamePadData = GamePad.GetData(0);
-			var touchDataList = Touch.GetData(0);
+//			var touchDataList = Touch.GetData(0);
+			touchDataList.Update(Touch.GetData(0));
+			
+			MyTouchData currentTouchData = touchDataList.getCurrentFrameData();
 
-			//input処理
+			count++;
+//			isCameraUpdate = true;
+			isCubeUpdate = true;
+
+			//input処理			
+						
+/*			if(count % 6 == 0){
+				for(int i = 0; i < touchDataL.Count; i++)
+				{
+					Logger.GameInfo(touchDataL[i].Status);
+				}
+				Logger.GameInfoLine();
+			}*/
 			
 #if DEBUG			
 			if((gamePadData.Buttons & GamePadButtons.Start) != 0 &&
 			   (gamePadData.Buttons & GamePadButtons.Select) != 0)
 			{
-				Console.WriteLine("exit."); 
+				Logger.GameInfoLine("exit."); 
 				loop = false;
 				return;
 			}
+			
+			if((gamePadData.Buttons & GamePadButtons.L) != 0 &&
+			   (gamePadData.Buttons & GamePadButtons.R) != 0)
+			{
+				gameStatus = GameStatus.Finish;
+			}
+
 #endif		
 			
-			if(touchDataList.Count == 0)
+			if(count % 60 == 0)
 			{
-				/* タッチがなかったとき */
-				var nonTouchData = new TouchData();
-				nonTouchData.Status = TouchStatus.None;
-				prevTouchDataList.Add(nonTouchData);
-			}
-			
-			foreach(TouchData touchData in touchDataList)
+				Logger.GameInfoLine("Game Status:" + gameStatus.ToString());
+				Logger.ProgramInfo();
+			}			
+			switch(gameStatus)
 			{
-				if(touchData.ID != 0)
+			case GameStatus.Start:
+//				isCameraUpdate = false;
+				isCubeUpdate = false;
+/*				if(dialog != null)
 				{
-					/* 指1本だけ対応 */
-					continue;
+					dialog.Update();
+				}*/
+				if(currentTouchData.Status == MyTouchStatus.Clicked)
+				{
+					/* タッチされた */
+//					gameStatus = GameStatus.Message;
+					gameStatus = GameStatus.First;
+					dialog = null;
+					MakeOrder();
+					count = 0;
 				}
-				prevTouchDataList.Add(touchData);
+				break;
+				
+			case GameStatus.Message:
+				if(currentTouchData.Status == MyTouchStatus.Down)
+				{
+//					isCameraUpdate = false;
+					gameStatus = GameStatus.First;
+				}
+				break;
+			case GameStatus.First: 
+			case GameStatus.Second:
+			case GameStatus.Third:
+			case GameStatus.Forth:
+				
+				if(count < 10)
+				{
+//					isCameraUpdate = false;
+					isCubeUpdate = false;
+				}
+				for(int i = 0; i < 4; i++)
+				{
+					if(players[i].order == (int)gameStatus)
+					{
+						currentPlayre = players[i];
+						break;
+					}
+				}
+				
+				bool isCubeSelected = false;
+				if(currentPlayre.isHuman)
+				{
+					/* 人間の入力待ち */
+					if(currentTouchData.Status == MyTouchStatus.Clicked)
+					{
+						isCubeSelected = cubes.IsCubeSelected(currentTouchData.X, -currentTouchData.Y);
+						Logger.GameInfoLine("Clicked!");
+					}
+					
+					Vector2 inputVector;			
+					inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
+					if(inputVector.Length() > epsilon)
+					{
+						inputVector = inputVector.Normalize();
+						camera.CalcPos(inputVector);
+					}
+			
+					if(currentTouchData.Status == MyTouchStatus.Move)
+					{
+						var currentPoint = new Vector2(currentTouchData.X, -currentTouchData.Y);
+						var prevPoint = new Vector2(touchDataList.getPrevFrameData().X,
+						                            -touchDataList.getPrevFrameData().Y);
+						inputVector = Vector2.Subtract(currentPoint, prevPoint);
+						/* touchはスティックに比べて値が小さいのでepsilonの調整余地あり */
+						if(inputVector.Length() > epsilon)
+						{
+							inputVector = inputVector.Normalize();
+							camera.CalcPos(inputVector);
+						}
+					}
+				}else {
+					/* コンピュータの計算待ち */
+					cubes.CpuClick(currentPlayre);
+					isCubeSelected = true;
+//					isCameraUpdate = false;
+					isCubeUpdate = false;
+				}
+				/* 勝利判定 */
+				if(isCubeSelected)
+				{
+					int judge = cubes.JudgeGame();
+					if(judge == 0)
+					{
+						/* 続行 */
+						gameStatus = (GameStatus)((int)gameStatus % 4 + 1);
+					} else if(judge == 1){
+						Logger.GameInfoLine("Player" + currentPlayre.id + "win !");
+						gameStatus = GameStatus.Finish;
+						count = 0;
+					} else {
+						Logger.GameInfoLine("Draw");
+						gameStatus = GameStatus.Finish;
+						count = 0;
+					}
+				}
+				break;
+			case GameStatus.Finish:
+				isCubeUpdate = false;
+				if(count < 10)
+				{
+//					isCameraUpdate = false;
+				}
+				if(currentTouchData.Status == MyTouchStatus.Clicked)
+				{
+					gameStatus = GameStatus.Start;
+					/* いろいろ元の状態に戻してスタート */
+					/* カメラ（視点）を先に戻さないとスタート時に画面が元の位置に戻らない */
+					camera.Reset();
+					cubes.Reset();
+					for(int i = 0; i < 4; i++)
+					{
+						players[i].order = 0;
+					}
+					count = 0;
+//					isCameraUpdate = false;
+				}
+				
+				break;
+				
+			default:
+				break;
 			}
 			
-			if(prevTouchDataList.Count > GameParameters.PrevFrameSize)
-			{
-				prevTouchDataList.RemoveAt(0);
-			}
+//			if(isCameraUpdate) camera.Update(gamePadData, touchDataList);
+			camera.Update(gamePadData, touchDataList);
 			
-/*			for(int i = 0; i < prevTouchDataList.Count; i++)
-			{
-				Console.Write(prevTouchDataList[i].Status);
-			}
-			Console.WriteLine("");*/
-			
-			camera.Update(gamePadData, prevTouchDataList);
-			
-			cubes.Update(gamePadData, prevTouchDataList);
+			if(isCubeUpdate) cubes.Update(gamePadData, touchDataList);
 						
 			graphics.SetViewport(0, 0, graphics.Screen.Width, graphics.Screen.Height);
 			
+			Logger.Display();
+//			SystemMemory.Dump();
 			
 		}
 
@@ -110,11 +294,27 @@ namespace Dtictactoe
 			graphics.SetClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 			graphics.Clear ();
 			
+			
+			if(dialog != null)
+			{
+				dialog.Render();
+			}
 			cubes.Render();
 
 			// Present the screen
 			graphics.SwapBuffers ();
 		}
+	
+		private static bool ContainStatusPrev (List<TouchData> list, TouchStatus queryStatus)
+		{
+			bool isContain = false;
+			foreach(TouchData data in list)
+			{
+				isContain |= data.Status == queryStatus;
+			}
+			return isContain;
+		}
+		
 		
 	}
 }

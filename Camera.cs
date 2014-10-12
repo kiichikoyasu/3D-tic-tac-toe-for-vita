@@ -16,10 +16,7 @@ namespace Dtictactoe
 		private GraphicsContext gc;
 		private float aspect, fov, near, far;
 		
-		private float epsilon = 0.01f;
 
-		/* 前のフレームでタッチしたところを覚えておく */
-		private Vector2 prevPoint;
 
 		public Camera (GraphicsContext graphics)
 		{
@@ -45,58 +42,10 @@ namespace Dtictactoe
 			cameraUp = new Vector3(0.0f, 1.0f, 0.0f);*/
 			
 			world = Matrix4.Identity;
-			
-			prevPoint = new Vector2(0.0f, 0.0f);
 		}
 		
-		public void Update(GamePadData gamePadData, List<TouchData> touchDataList)
+		public void Update(GamePadData gamePadData, TouchDataList touchDataList)
 		{			
-			Vector2 inputVector;			
-			
-			if((gamePadData.ButtonsDown & GamePadButtons.Right) != 0){
-				CalcPos(new Vector2(1.0f, 0.0f));
-			}
-			
-			if((gamePadData.ButtonsDown & GamePadButtons.Left) != 0){
-				CalcPos(new Vector2(-1.0f, 0.0f));
-			}
-			
-			if((gamePadData.ButtonsDown & GamePadButtons.Up) != 0){
-				CalcPos(new Vector2(0.0f, 1.0f));
-			}
-
-			if((gamePadData.ButtonsDown & GamePadButtons.Down) != 0){
-				CalcPos(new Vector2(0.0f, -1.0f));
-			}
-			
-			inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
-			if(inputVector.Length() > epsilon)
-			{
-				inputVector = inputVector.Normalize();
-				CalcPos(inputVector);
-			}
-			
-			
-			/* 今フレームのタッチ情報を取得 */	
-			var touchData = touchDataList[touchDataList.Count - 1];
-			if(touchData.Status == TouchStatus.Down)
-			{
-				prevPoint = new Vector2(touchData.X, -touchData.Y);
-			}
-			
-			if(touchData.Status == TouchStatus.Move)
-			{
-				var currentPoint = new Vector2(touchData.X, -touchData.Y);
-				inputVector = Vector2.Subtract(currentPoint, prevPoint);
-				/* touchはスティックに比べて値が小さいのでepsilonの調整余地あり */
-				if(inputVector.Length() > epsilon)
-				{
-					inputVector = inputVector.Normalize();
-					CalcPos(inputVector);
-				}
-				prevPoint = currentPoint;
-			}
-			
 			
 			view = Matrix4.LookAt(eye, center, up);
 			
@@ -114,10 +63,21 @@ namespace Dtictactoe
 			get{return eye;}
 		}
 		
+		public void Reset()
+		{
+			eye = new Vector3(0.0f, 0.0f, 10.0f);
+			center = new Vector3(0.0f, 0.0f, 0.0f);
+			up = Vector3.UnitY;
+			
+			view = Matrix4.LookAt(eye, center, up);
+			
+			worldViewProj = proj * view * world;
+		}
+		
 		/* カメラの注視点と注視点との距離を変えずにカメラの位置を移動するメソッド 
 		 * 画面上の入力と直観的に画面が動く
 		 * カメラは注視点を中心とした球面上を動く*/
-		private void CalcPos(Vector2 input2D){
+		public void CalcPos(Vector2 input2D){
 			
 			/*
 			 * カメラと注視点の距離

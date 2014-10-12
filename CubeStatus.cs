@@ -5,10 +5,10 @@ namespace Dtictactoe
 	public enum CubeStatus : int
 	{
 		NotSelected = 0,
-		Circle,
-		Cross,
-		Square,
-		Triangle,
+		Circle = 1,
+		Cross = 2,
+		Triangle = 3,
+		Square = 4,
 	}
 }
 
