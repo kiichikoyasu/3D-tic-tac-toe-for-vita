@@ -26,7 +26,7 @@ namespace Dtictactoe
 		private static Dialog dialog;
 		
 		private static bool loop = true;
-		private static bool isCameraUpdate = true, isCubeUpdate = true;
+		private static bool isCubeUpdate = true;
 		
 		private static TouchDataList touchDataList;
 
@@ -154,9 +154,9 @@ namespace Dtictactoe
 				{
 					dialog.Update();
 				}*/
+				/* タッチ */
 				if(currentTouchData.Status == MyTouchStatus.Clicked)
 				{
-					/* タッチされた */
 //					gameStatus = GameStatus.Message;
 					gameStatus = GameStatus.First;
 					dialog = null;
@@ -166,6 +166,7 @@ namespace Dtictactoe
 				break;
 				
 			case GameStatus.Message:
+				/* タッチ */
 				if(currentTouchData.Status == MyTouchStatus.Down)
 				{
 //					isCameraUpdate = false;
@@ -179,7 +180,6 @@ namespace Dtictactoe
 				
 				if(count < 10)
 				{
-//					isCameraUpdate = false;
 					isCubeUpdate = false;
 				}
 				for(int i = 0; i < 4; i++)
@@ -195,12 +195,13 @@ namespace Dtictactoe
 				if(currentPlayre.isHuman)
 				{
 					/* 人間の入力待ち */
+					/* ボタン */
 					if(currentTouchData.Status == MyTouchStatus.Clicked)
 					{
 						isCubeSelected = cubes.IsCubeSelected(currentTouchData.X, -currentTouchData.Y);
 						Logger.GameInfoLine("Clicked!");
 					}
-					
+					/* スティック */
 					Vector2 inputVector;			
 					inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
 					if(inputVector.Length() > epsilon)
@@ -208,7 +209,7 @@ namespace Dtictactoe
 						inputVector = inputVector.Normalize();
 						camera.CalcPos(inputVector);
 					}
-			
+			　		/* タッチ */
 					if(currentTouchData.Status == MyTouchStatus.Move)
 					{
 						var currentPoint = new Vector2(currentTouchData.X, -currentTouchData.Y);
@@ -235,7 +236,7 @@ namespace Dtictactoe
 					int judge = cubes.JudgeGame();
 					if(judge == 0)
 					{
-						/* 続行 */
+						/* ゲーム続行 */
 						gameStatus = (GameStatus)((int)gameStatus % 4 + 1);
 					} else if(judge == 1){
 						Logger.GameInfoLine("Player" + currentPlayre.id + "win !");
@@ -250,10 +251,15 @@ namespace Dtictactoe
 				break;
 			case GameStatus.Finish:
 				isCubeUpdate = false;
-				if(count < 10)
+				/* スティック */
+				Vector2 input;			
+				input = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
+				if(input.Length() > epsilon)
 				{
-//					isCameraUpdate = false;
+					input = input.Normalize();
+					camera.CalcPos(input);
 				}
+				/* タッチ */
 				if(currentTouchData.Status == MyTouchStatus.Clicked)
 				{
 					gameStatus = GameStatus.Start;
@@ -266,17 +272,14 @@ namespace Dtictactoe
 						players[i].order = 0;
 					}
 					count = 0;
-//					isCameraUpdate = false;
 				}
-				
 				break;
 				
 			default:
 				break;
 			}
 			
-//			if(isCameraUpdate) camera.Update(gamePadData, touchDataList);
-			camera.Update(gamePadData, touchDataList);
+			camera.Update();
 			
 			if(isCubeUpdate) cubes.Update(gamePadData);
 						

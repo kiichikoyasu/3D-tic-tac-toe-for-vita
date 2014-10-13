@@ -44,7 +44,7 @@ namespace Dtictactoe
 			world = Matrix4.Identity;
 		}
 		
-		public void Update(GamePadData gamePadData, TouchDataList touchDataList)
+		public void Update()
 		{			
 			
 			view = Matrix4.LookAt(eye, center, up);
