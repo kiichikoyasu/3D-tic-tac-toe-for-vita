@@ -16,7 +16,6 @@ namespace Dtictactoe
 		/* cube立方体1辺の長さ */
 		private float size;
 		private float scale;
-//		private SelectStatus selectStatus;
 		private CubeStatus status;
 		
 		private GraphicsContext gc;
@@ -74,7 +73,7 @@ namespace Dtictactoe
 			bottom.Initialize(texture, program);
 		}
 		
-		public void Update(GamePadData gamePadData, TouchDataList touchDataList)
+		public void Update(GamePadData gamePadData)
 		{			
 			scale = 1.0f;
 			
@@ -249,11 +248,6 @@ namespace Dtictactoe
 				
 		}
 		
-		public CubeStatus Status
-		{
-			get{return status;}
-		}
-		
 		public void Reset(Texture2D texture)
 		{
 			status = CubeStatus.NotSelected;
@@ -269,6 +263,17 @@ namespace Dtictactoe
 			top.Update();
 			bottom.Texture = texture;
 			bottom.Update();
+		}
+		
+		public float Scale
+		{
+			set{scale = value;}
+		}
+		
+		public CubeStatus Status
+		{
+			set{status = value;}
+			get{return status;}
 		}
 			
 	}

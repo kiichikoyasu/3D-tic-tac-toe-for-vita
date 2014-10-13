@@ -278,7 +278,7 @@ namespace Dtictactoe
 //			if(isCameraUpdate) camera.Update(gamePadData, touchDataList);
 			camera.Update(gamePadData, touchDataList);
 			
-			if(isCubeUpdate) cubes.Update(gamePadData, touchDataList);
+			if(isCubeUpdate) cubes.Update(gamePadData);
 						
 			graphics.SetViewport(0, 0, graphics.Screen.Width, graphics.Screen.Height);
 			

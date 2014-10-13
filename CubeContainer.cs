@@ -60,7 +60,7 @@ namespace Dtictactoe
 		}
 			
 		
-		public void Update(GamePadData gamePadData, TouchDataList touchDataList)
+		public void Update(GamePadData gamePadData)
 		{
 			gameStatus = (int)AppMain.gameStatus;
 
@@ -72,7 +72,7 @@ namespace Dtictactoe
 				{
 					for(int k = 0; k < gameSize; k++)
 					{
-						cubes[i, j, k].Update(gamePadData, touchDataList);
+						cubes[i, j, k].Update(gamePadData);
 					}
 				}
 			}
