@@ -85,7 +85,8 @@ namespace Dtictactoe
 					(float)right / gc.Screen.Width * 2.0f - 1.0f, -((float)bottom / gc.Screen.Height * 2.0f - 1.0f), -1.0f,
 				};
 				
-//				Logger.GameInfoLine((float)top / gc.Screen.Height * 2.0f - 1.0f);
+//				Logger.GameInfoLine(-((float)top / gc.Screen.Height * 2.0f - 1.0f));
+//				Logger.GameInfoLine(-((float)bottom / gc.Screen.Height * 2.0f - 1.0f));
 			
 				vertexBuffer.SetVertices(0, vertices);
 
@@ -132,6 +133,8 @@ namespace Dtictactoe
 	        var texture = new Texture2D(width, height, false, PixelFormat.Rgba);
     	    texture.SetPixels(0, image.ToBuffer());
         	image.Dispose();
+			
+//			Logger.GameInfoLine("width" + texture.Width + "height" + texture.Height);
 
         	return texture;
     	}

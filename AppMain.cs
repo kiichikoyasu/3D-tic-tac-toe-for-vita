@@ -60,7 +60,7 @@ namespace Dtictactoe
 			}
 			for(int i = 0; i < 4; i++)
 			{
-				Logger.GameInfoLine(players[i].order);
+				Logger.DebugLine(players[i].order);
 			}
 		}
 
@@ -101,6 +101,8 @@ namespace Dtictactoe
 			dialog.Initialize(simpleShader);
 			dialog.Visible = false;
 			
+			Logger.Initialize(graphics, simpleShader);
+			
 			touchDataList = new TouchDataList();
 		}
 
@@ -132,7 +134,7 @@ namespace Dtictactoe
 			if((gamePadData.Buttons & GamePadButtons.Start) != 0 &&
 			   (gamePadData.Buttons & GamePadButtons.Select) != 0)
 			{
-				Logger.GameInfoLine("exit."); 
+				Logger.DebugLine("exit."); 
 				loop = false;
 				return;
 			}
@@ -145,11 +147,11 @@ namespace Dtictactoe
 
 #endif		
 			
-/*			if(count % 60 == 0)
-			{
-				Logger.GameInfoLine("Game Status:" + gameStatus.ToString());
-				Logger.Info();
-			}*/			
+//			if(count % 60 == 0)
+//			{
+				Logger.DebugLine("Game Status:" + gameStatus.ToString());
+				Logger.DebugLine("Bottun:" + gamePadData.Buttons);
+//			}			
 			switch(gameStatus)
 			{
 			case GameStatus.Start:
@@ -163,7 +165,7 @@ namespace Dtictactoe
 					MakeOrder();
 					dialog.Texture = cubes.GetTexture(players[0].order);
 					dialog.Scale = (0.25f);
-					dialog.SetLeftTop(0, 0);
+					dialog.SetRightTop(graphics.Screen.Width, 0);
 					dialog.Visible = true;
 					count = 0;
 //					isCubeUpdate = true;
@@ -245,11 +247,11 @@ namespace Dtictactoe
 						/* ゲーム続行 */
 						gameStatus = (GameStatus)((int)gameStatus % 4 + 1);
 					} else if(judge == 1){
-						Logger.GameInfoLine("Player" + currentPlayre.id + "win !");
+						Logger.DebugLine("Player" + currentPlayre.id + "win !");
 						gameStatus = GameStatus.Finish;
 						count = 0;
 					} else {
-						Logger.GameInfoLine("Draw");
+						Logger.DebugLine("Draw");
 						gameStatus = GameStatus.Finish;
 						count = 0;
 					}
@@ -307,7 +309,6 @@ namespace Dtictactoe
 						
 			graphics.SetViewport(0, 0, graphics.Screen.Width, graphics.Screen.Height);
 			
-			Logger.Display();
 //			SystemMemory.Dump();
 			
 		}
@@ -323,6 +324,7 @@ namespace Dtictactoe
 			dialog.Render();
 			cubes.Render();
 
+			Logger.Display();
 			// Present the screen
 			graphics.SwapBuffers ();
 		}

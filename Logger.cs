@@ -2,70 +2,90 @@ using System;
 using System.Reflection;
 using System.Diagnostics;
 using System.IO;
+using System.Collections.Generic;
+
+using Sce.PlayStation.Core.Imaging;
+using Sce.PlayStation.Core.Graphics;
 
 namespace Dtictactoe
 {
 	public class Logger
 	{
 		private static string gameInfo = String.Empty;
+		private static GraphicsContext gc;
+		private static ShaderProgram shader;
+		private static Font font;
+		private static List<Object2D> debugStrings;
+		private static int height;
 		
-		public static void GameInfo(bool value)
+		public static void Initialize(GraphicsContext graphics, ShaderProgram program)
+		{
+#if DEBUG
+			gc = graphics;
+			shader = program;
+			debugStrings = new List<Object2D>();
+			font = new Font(FontAlias.System, 14, FontStyle.Regular);
+			height = 0;
+#endif
+		}
+		
+		public static void Debug(bool value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(int value)
+		public static void Debug(int value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(uint value)
+		public static void Debug(uint value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(long value)
+		public static void Debug(long value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(ulong value)
+		public static void Debug(ulong value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(float value)
+		public static void Debug(float value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(double value)
+		public static void Debug(double value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(char value)
+		public static void Debug(char value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
 #endif		
 		}
 		
-		public static void GameInfo(char[] value)
+		public static void Debug(char[] value)
 		{
 #if DEBUG
 			for(int i = 0; i < value.Length; i++){
@@ -74,14 +94,14 @@ namespace Dtictactoe
 #endif		
 		}
 		
-		public static void GameInfo(string value)
+		public static void Debug(string value)
 		{
 #if DEBUG
 			gameInfo = gameInfo + value;
 #endif		
 		}
 		
-		public static void GameInfo(object value)
+		public static void Debug(object value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString();
@@ -89,70 +109,79 @@ namespace Dtictactoe
 		}
 		
 
-		public static void GameInfoLine()
+		public static void DebugLine()
 		{
 #if DEBUG			
 			gameInfo = gameInfo + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(bool value)
+		public static void DebugLine(bool value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(int value)
+		public static void DebugLine(int value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(uint value)
+		public static void DebugLine(uint value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(long value)
+		public static void DebugLine(long value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(ulong value)
+		public static void DebugLine(ulong value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 
-		public static void GameInfoLine(float value)
+		public static void DebugLine(float value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(double value)
+		public static void DebugLine(double value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(char value)
+		public static void DebugLine(char value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value.ToString() + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(char[] value)
+		public static void DebugLine(char[] value)
 		{
 #if DEBUG
 			for(int i = 0; i < value.Length; i++)
@@ -160,20 +189,23 @@ namespace Dtictactoe
 				gameInfo = gameInfo + value[i].ToString();
 			}
 			gameInfo = gameInfo + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(string value)
+		public static void DebugLine(string value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
-		public static void GameInfoLine(object value)
+		public static void DebugLine(object value)
 		{
 #if DEBUG			
 			gameInfo = gameInfo + value + "\n";
+			SetTextTexture ();
 #endif		
 		}
 		
@@ -181,9 +213,16 @@ namespace Dtictactoe
 		{
 #if DEBUG
 			if(gameInfo.Length > 0){
-				Console.Write(gameInfo);
+				SetTextTexture();
 				gameInfo = String.Empty;
 			}
+			
+			foreach(Object2D obj in debugStrings)
+			{
+				obj.Render();
+			}
+			height = 0;
+			debugStrings.Clear();
 #endif		
 		}
 		
@@ -198,6 +237,19 @@ namespace Dtictactoe
 			Console.WriteLine("[" + mb1.DeclaringType + "." + mb1.Name + "]");
 //			Console.WriteLine(sf1.GetFileLineNumber());
 #endif		
+		}
+
+		static void SetTextTexture ()
+		{
+			Object2D obj = new Object2D(gc);
+			obj.Initialize(shader);
+			obj.Visible = true;
+			obj.Texture = Object2D.createTexture(gameInfo, font, 0xffffffff);
+			obj.SetLeftTop(0, height);
+			debugStrings.Add(obj);
+			height += font.Size;
+			Console.Write(gameInfo);
+			gameInfo = String.Empty;
 		}
 	}
 }
