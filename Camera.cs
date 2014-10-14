@@ -77,7 +77,7 @@ namespace Dtictactoe
 		/* カメラの注視点と注視点との距離を変えずにカメラの位置を移動するメソッド 
 		 * 画面上の入力と直観的に画面が動く
 		 * カメラは注視点を中心とした球面上を動く*/
-		public void CalcPos(Vector2 input2D){
+		public void Move(Vector2 input2D){
 			
 			/*
 			 * カメラと注視点の距離

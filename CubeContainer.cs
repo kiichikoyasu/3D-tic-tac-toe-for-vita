@@ -328,6 +328,12 @@ namespace Dtictactoe
 				}
 			}
 		}
+		
+		public Texture2D GetTexture(int status)
+		{
+			return textures[status];
+		}
+		
 	}
 }
 

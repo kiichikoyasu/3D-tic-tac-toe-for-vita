@@ -71,12 +71,12 @@ namespace Dtictactoe
 		
 		public void Update()
 		{
-			/* プロパティは直接ref引数に渡せないので無理やりフィールドを読むようにした*/
-			program.SetUniformValue(0, ref Camera.worldViewProj);
 		}
 		
 		public void Render()
 		{
+			/* プロパティは直接ref引数に渡せないので無理やりフィールドを読むようにした*/
+			program.SetUniformValue(0, ref Camera.worldViewProj);
 			vertexBuffer.SetVertices(0, vertices);
 			gc.SetVertexBuffer(0, vertexBuffer);
 			gc.SetTexture(0,texture);

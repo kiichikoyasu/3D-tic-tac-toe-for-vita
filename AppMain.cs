@@ -23,7 +23,7 @@ namespace Dtictactoe
 	 	private static Player[] players;
 		private static Player currentPlayre;
 		
-		private static Dialog dialog;
+		private static Object2D dialog;
 		
 		private static bool loop = true;
 		private static bool isCubeUpdate = true;
@@ -31,6 +31,8 @@ namespace Dtictactoe
 		private static TouchDataList touchDataList;
 
 		private static float epsilon = 0.01f;
+		
+		private static ShaderProgram simpleShader;
 		
 		public static void Main (string[] args)
 		{
@@ -91,10 +93,13 @@ namespace Dtictactoe
 			/* 順番決め */
 //			MakeOrder ();
 			
+			/* object2D用のシェーダー */
+			simpleShader = new ShaderProgram("/Application/shaders/Simple.cgx");
+
 			
-			
-			dialog = new Dialog(graphics);
-			dialog.Initialize(new Texture2D("/Application/resources/test.png", false));
+			dialog = new Object2D(graphics);
+			dialog.Initialize(simpleShader);
+			dialog.Visible = false;
 			
 			touchDataList = new TouchDataList();
 		}
@@ -140,28 +145,28 @@ namespace Dtictactoe
 
 #endif		
 			
-			if(count % 60 == 0)
+/*			if(count % 60 == 0)
 			{
 				Logger.GameInfoLine("Game Status:" + gameStatus.ToString());
-				Logger.ProgramInfo();
-			}			
+				Logger.Info();
+			}*/			
 			switch(gameStatus)
 			{
 			case GameStatus.Start:
 //				isCameraUpdate = false;
 				isCubeUpdate = false;
-/*				if(dialog != null)
-				{
-					dialog.Update();
-				}*/
 				/* タッチ */
 				if(currentTouchData.Status == MyTouchStatus.Clicked)
 				{
 //					gameStatus = GameStatus.Message;
 					gameStatus = GameStatus.First;
-					dialog = null;
 					MakeOrder();
+					dialog.Texture = cubes.GetTexture(players[0].order);
+					dialog.Scale = (0.25f);
+					dialog.SetLeftTop(0, 0);
+					dialog.Visible = true;
 					count = 0;
+//					isCubeUpdate = true;
 				}
 				break;
 				
@@ -195,21 +200,22 @@ namespace Dtictactoe
 				if(currentPlayre.isHuman)
 				{
 					/* 人間の入力待ち */
-					/* ボタン */
-					if(currentTouchData.Status == MyTouchStatus.Clicked)
-					{
-						isCubeSelected = cubes.IsCubeSelected(currentTouchData.X, -currentTouchData.Y);
-						Logger.GameInfoLine("Clicked!");
-					}
 					/* スティック */
 					Vector2 inputVector;			
 					inputVector = new Vector2(gamePadData.AnalogLeftX, -gamePadData.AnalogLeftY);
 					if(inputVector.Length() > epsilon)
 					{
 						inputVector = inputVector.Normalize();
-						camera.CalcPos(inputVector);
+						camera.Move(inputVector);
 					}
-			　		/* タッチ */
+					
+					/* タッチ */
+					if(currentTouchData.Status == MyTouchStatus.Clicked)
+					{
+						isCubeSelected = cubes.IsCubeSelected(currentTouchData.X, -currentTouchData.Y);
+						//						Logger.GameInfoLine("Clicked!");
+					}
+					
 					if(currentTouchData.Status == MyTouchStatus.Move)
 					{
 						var currentPoint = new Vector2(currentTouchData.X, -currentTouchData.Y);
@@ -220,7 +226,7 @@ namespace Dtictactoe
 						if(inputVector.Length() > epsilon)
 						{
 							inputVector = inputVector.Normalize();
-							camera.CalcPos(inputVector);
+							camera.Move(inputVector);
 						}
 					}
 				}else {
@@ -250,6 +256,7 @@ namespace Dtictactoe
 				}
 				break;
 			case GameStatus.Finish:
+				dialog.Visible = false;
 				isCubeUpdate = false;
 				/* スティック */
 				Vector2 input;			
@@ -257,9 +264,23 @@ namespace Dtictactoe
 				if(input.Length() > epsilon)
 				{
 					input = input.Normalize();
-					camera.CalcPos(input);
+					camera.Move(input);
 				}
 				/* タッチ */
+				if(currentTouchData.Status == MyTouchStatus.Move)
+				{
+					var currentPoint = new Vector2(currentTouchData.X, -currentTouchData.Y);
+					var prevPoint = new Vector2(touchDataList.getPrevFrameData().X,
+					                            -touchDataList.getPrevFrameData().Y);
+					input = Vector2.Subtract(currentPoint, prevPoint);
+					/* touchはスティックに比べて値が小さいのでepsilonの調整余地あり */
+					if(input.Length() > epsilon)
+					{
+						input = input.Normalize();
+						camera.Move(input);
+					}
+				}
+				
 				if(currentTouchData.Status == MyTouchStatus.Clicked)
 				{
 					gameStatus = GameStatus.Start;
@@ -280,6 +301,7 @@ namespace Dtictactoe
 			}
 			
 			camera.Update();
+			dialog.Update();
 			
 			if(isCubeUpdate) cubes.Update(gamePadData);
 						
@@ -298,10 +320,7 @@ namespace Dtictactoe
 			graphics.Clear ();
 			
 			
-			if(dialog != null)
-			{
-				dialog.Render();
-			}
+			dialog.Render();
 			cubes.Render();
 
 			// Present the screen
