@@ -11,11 +11,11 @@ namespace Dtictactoe
 {
 	public class Logger
 	{
-		private static string gameInfo = String.Empty;
+		private static string debugString = String.Empty;
 		private static GraphicsContext gc;
 		private static ShaderProgram shader;
 		private static Font font;
-		private static List<Object2D> debugStrings;
+		private static List<Object2D> debugStringList;
 		private static int height;
 		
 		public static void Initialize(GraphicsContext graphics, ShaderProgram program)
@@ -23,7 +23,7 @@ namespace Dtictactoe
 #if DEBUG
 			gc = graphics;
 			shader = program;
-			debugStrings = new List<Object2D>();
+			debugStringList = new List<Object2D>();
 			font = new Font(FontAlias.System, 14, FontStyle.Regular);
 			height = 0;
 #endif
@@ -32,56 +32,56 @@ namespace Dtictactoe
 		public static void Debug(bool value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
 		public static void Debug(int value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
 		public static void Debug(uint value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
 		public static void Debug(long value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
 		public static void Debug(ulong value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
 		public static void Debug(float value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
 		public static void Debug(double value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
 		public static void Debug(char value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
@@ -89,7 +89,7 @@ namespace Dtictactoe
 		{
 #if DEBUG
 			for(int i = 0; i < value.Length; i++){
-				gameInfo = gameInfo + value[i].ToString();
+				debugString = debugString + value[i].ToString();
 			}
 #endif		
 		}
@@ -97,14 +97,14 @@ namespace Dtictactoe
 		public static void Debug(string value)
 		{
 #if DEBUG
-			gameInfo = gameInfo + value;
+			debugString = debugString + value;
 #endif		
 		}
 		
 		public static void Debug(object value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString();
+			debugString = debugString + value.ToString();
 #endif		
 		}
 		
@@ -112,7 +112,7 @@ namespace Dtictactoe
 		public static void DebugLine()
 		{
 #if DEBUG			
-			gameInfo = gameInfo + "\n";
+			debugString = debugString + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -120,7 +120,7 @@ namespace Dtictactoe
 		public static void DebugLine(bool value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -128,7 +128,7 @@ namespace Dtictactoe
 		public static void DebugLine(int value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -136,7 +136,7 @@ namespace Dtictactoe
 		public static void DebugLine(uint value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -144,7 +144,7 @@ namespace Dtictactoe
 		public static void DebugLine(long value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -152,7 +152,7 @@ namespace Dtictactoe
 		public static void DebugLine(ulong value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -160,7 +160,7 @@ namespace Dtictactoe
 		public static void DebugLine(float value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -168,7 +168,7 @@ namespace Dtictactoe
 		public static void DebugLine(double value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -176,7 +176,7 @@ namespace Dtictactoe
 		public static void DebugLine(char value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value.ToString() + "\n";
+			debugString = debugString + value.ToString() + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -186,9 +186,9 @@ namespace Dtictactoe
 #if DEBUG
 			for(int i = 0; i < value.Length; i++)
 			{
-				gameInfo = gameInfo + value[i].ToString();
+				debugString = debugString + value[i].ToString();
 			}
-			gameInfo = gameInfo + "\n";
+			debugString = debugString + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -196,7 +196,7 @@ namespace Dtictactoe
 		public static void DebugLine(string value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value + "\n";
+			debugString = debugString + value + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -204,7 +204,7 @@ namespace Dtictactoe
 		public static void DebugLine(object value)
 		{
 #if DEBUG			
-			gameInfo = gameInfo + value + "\n";
+			debugString = debugString + value + "\n";
 			SetTextTexture ();
 #endif		
 		}
@@ -212,17 +212,17 @@ namespace Dtictactoe
 		public static void Display()
 		{
 #if DEBUG
-			if(gameInfo.Length > 0){
+			if(debugString.Length > 0){
 				SetTextTexture();
-				gameInfo = String.Empty;
+				debugString = String.Empty;
 			}
 			
-			foreach(Object2D obj in debugStrings)
+			foreach(Object2D obj in debugStringList)
 			{
 				obj.Render();
 			}
 			height = 0;
-			debugStrings.Clear();
+			debugStringList.Clear();
 #endif		
 		}
 		
@@ -244,12 +244,12 @@ namespace Dtictactoe
 			Object2D obj = new Object2D(gc);
 			obj.Initialize(shader);
 			obj.Visible = true;
-			obj.Texture = Object2D.createTexture(gameInfo, font, 0xffffffff);
+			obj.Texture = Object2D.createTexture(debugString, font, 0xffffffff);
 			obj.SetLeftTop(0, height);
-			debugStrings.Add(obj);
+			debugStringList.Add(obj);
 			height += font.Size;
-			Console.Write(gameInfo);
-			gameInfo = String.Empty;
+			Console.Write(debugString);
+			debugString = String.Empty;
 		}
 	}
 }

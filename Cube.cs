@@ -16,42 +16,31 @@ namespace Dtictactoe
 		/* cube立方体1辺の長さ */
 		private float size;
 		private float scale;
-		private CubeStatus status;
-		
+		private CubeSelectStatus selectStatus;
+		private CubePositionStatus positionStatus;
 		private GraphicsContext gc;
 				
 		private Plane front, left, back, right, top, bottom;
 
 		
-		public Cube (GraphicsContext graphics, float x, float y, float z)
+		public Cube (GraphicsContext graphics, int x, int y, int z)
 		{
 			this.gc = graphics;
-			this.x = x;
-			this.y = y;
-			this.z = z;
+			this.x = (float) (x - 1) * GameParameters.CubeInterval;
+			this.y = (float) (y - 1) * GameParameters.CubeInterval;
+			this.z = (float) (z - 1) * GameParameters.CubeInterval;
+			int oneCount = 0;
+			if(x == 1) oneCount++;
+			if(y == 1) oneCount++;
+			if(z == 1) oneCount++;
+			positionStatus = (CubePositionStatus)oneCount;
 		}
-		
-		public Cube (GraphicsContext graphics, Vector3 position)
-		{
-			this.gc = graphics;
-			this.x = position.X;
-			this.y = position.Y;
-			this.z = position.Z;
-		}
-		
-/*		public enum SelectStatus {
-			None,
-			Circle,
-			Cross,
-			Square,
-			Triangle
-		}*/		
 		
 		public void Initialize(Texture2D texture, ShaderProgram program)
 		{
 			size = GameParameters.CubeSize;
 			scale = 1.0f;
-			status = CubeStatus.NotSelected;
+			selectStatus = CubeSelectStatus.NotSelected;
 //			selectStatus = SelectStatus.None;
 			
 			front = new Plane(gc);
@@ -79,28 +68,28 @@ namespace Dtictactoe
 			
 			if((gamePadData.Buttons & GamePadButtons.Circle) != 0)
 			{
-				if(status == CubeStatus.Circle){
+				if(selectStatus == CubeSelectStatus.Circle){
 					scale = GameParameters.CubeScale;
 				}
 			}
 			
 			if((gamePadData.Buttons & GamePadButtons.Cross) != 0)
 			{
-				if(status == CubeStatus.Cross){
+				if(selectStatus == CubeSelectStatus.Cross){
 					scale = GameParameters.CubeScale;
 				}
 			}
 			
 			if((gamePadData.Buttons & GamePadButtons.Square) != 0)
 			{
-				if(status == CubeStatus.Square){
+				if(selectStatus == CubeSelectStatus.Square){
 					scale = GameParameters.CubeScale;
 				}
 			}
 			
 			if((gamePadData.Buttons & GamePadButtons.Triangle) != 0)
 			{
-				if(status == CubeStatus.Triangle){
+				if(selectStatus == CubeSelectStatus.Triangle){
 					scale = GameParameters.CubeScale;
 				}
 			}
@@ -231,12 +220,12 @@ namespace Dtictactoe
 			return DistWithRayStartClicked (Camera.Eye, touchPos);
 		}
 		
-		public void Clicked(Texture2D texture, CubeStatus status)
+		public void Clicked(Texture2D texture, CubeSelectStatus status)
 		{
-			if(this.status == CubeStatus.NotSelected)
+			if(this.selectStatus == CubeSelectStatus.NotSelected)
 			{
 				/* 新たに状態が変わるときのみ */
-				this.status = status;
+				this.selectStatus = status;
 				
 				front.Texture = texture;
 				left.Texture = texture;
@@ -250,7 +239,7 @@ namespace Dtictactoe
 		
 		public void Reset(Texture2D texture)
 		{
-			status = CubeStatus.NotSelected;
+			selectStatus = CubeSelectStatus.NotSelected;
 			front.Texture = texture;
 			front.Update();
 			left.Texture = texture;
@@ -270,12 +259,18 @@ namespace Dtictactoe
 			set{scale = value;}
 		}
 		
-		public CubeStatus Status
+		public CubeSelectStatus SelectStatus
 		{
-			set{status = value;}
-			get{return status;}
+			get{return selectStatus;}
+			set{selectStatus = value;}
 		}
 			
+		public CubePositionStatus PositionStatus
+		{
+			get{return positionStatus;}
+//			set{positionStatus = value;}
+		}
+		
 	}
 }
 

@@ -246,6 +246,8 @@ namespace Dtictactoe
 					{
 						/* ゲーム続行 */
 						gameStatus = (GameStatus)((int)gameStatus % 4 + 1);
+						/* AI用のスコア更新 */
+						/* cubes.UpdateScore(ref player.score[], player.status) */
 					} else if(judge == 1){
 						Logger.DebugLine("Player" + currentPlayre.id + "win !");
 						gameStatus = GameStatus.Finish;

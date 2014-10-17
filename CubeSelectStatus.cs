@@ -2,7 +2,7 @@ using System;
 
 namespace Dtictactoe
 {
-	public enum CubeStatus : int
+	public enum CubeSelectStatus : int
 	{
 		NotSelected = 0,
 		Circle = 1,

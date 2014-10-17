@@ -16,6 +16,8 @@ namespace Dtictactoe
 		private Texture2D[] textures;
 		private ShaderProgram program;
 		private int clickCount;
+		private Cube clickingCube;
+		private int clickingX, clickingY, clickingZ;
 
 				
 		public CubeContainer (GraphicsContext graphics)
@@ -44,14 +46,11 @@ namespace Dtictactoe
 			
 			for(int i = 0; i < gameSize; i++)
 			{
-				var z = (float)(i - 1) * interval;
 				for(int j = 0; j < gameSize; j++)
 				{
-					var y = (float)(j - 1) * interval;
 					for(int k = 0; k < gameSize; k++)
 					{
-						var x = (float)(k - 1) * interval;
-						cubes[i, j, k] = new Cube(gc, x, y, z);
+						cubes[i, j, k] = new Cube(gc, i, j, k);
 						cubes[i, j, k].Initialize(textures[0], program);
 					}
 				}
@@ -77,30 +76,30 @@ namespace Dtictactoe
 		
 		private bool XLineJudge(int y, int z)
 		{
-			if(cubes[0, y, z].Status != CubeStatus.NotSelected)
+			if(cubes[0, y, z].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				return cubes[0, y, z].Status == cubes[1, y, z].Status &&
-					cubes[1, y, z].Status == cubes[2, y, z].Status;
+				return cubes[0, y, z].SelectStatus == cubes[1, y, z].SelectStatus &&
+					cubes[1, y, z].SelectStatus == cubes[2, y, z].SelectStatus;
 			}
 			return false;
 		}
 
 		private bool YLineJudge(int x, int z)
 		{
-			if(cubes[x, 0, z].Status != CubeStatus.NotSelected)
+			if(cubes[x, 0, z].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				return cubes[x, 0, z].Status == cubes[x, 1, z].Status &&
-					cubes[x, 1, z].Status == cubes[x, 2, z].Status;
+				return cubes[x, 0, z].SelectStatus == cubes[x, 1, z].SelectStatus &&
+					cubes[x, 1, z].SelectStatus == cubes[x, 2, z].SelectStatus;
 			}
 			return false;
 		}
 
 		private bool ZLineJudge(int x, int y)
 		{
-			if(cubes[x, y, 0].Status != CubeStatus.NotSelected)
+			if(cubes[x, y, 0].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				return cubes[x, y, 0].Status == cubes[x, y, 1].Status &&
-					cubes[x, y, 1].Status == cubes[x, y, 2].Status;
+				return cubes[x, y, 0].SelectStatus == cubes[x, y, 1].SelectStatus &&
+					cubes[x, y, 1].SelectStatus == cubes[x, y, 2].SelectStatus;
 			}
 			return false;
 		}
@@ -108,15 +107,15 @@ namespace Dtictactoe
 		private bool XYLineJudge(int z)
 		{
 			bool isBingo = false;
-			if(cubes[0, 0, z].Status != CubeStatus.NotSelected)
+			if(cubes[0, 0, z].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				isBingo |= cubes[0, 0, z].Status == cubes[1, 1, z].Status &&
-					cubes[1, 1, z].Status == cubes[2, 2, z].Status;
+				isBingo |= cubes[0, 0, z].SelectStatus == cubes[1, 1, z].SelectStatus &&
+					cubes[1, 1, z].SelectStatus == cubes[2, 2, z].SelectStatus;
 			}
-			if(cubes[0, 2, z].Status != CubeStatus.NotSelected)
+			if(cubes[0, 2, z].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				isBingo |= cubes[0, 2, z].Status == cubes[1, 1, z].Status &&
-					cubes[1, 1, z].Status == cubes[2, 0, z].Status;
+				isBingo |= cubes[0, 2, z].SelectStatus == cubes[1, 1, z].SelectStatus &&
+					cubes[1, 1, z].SelectStatus == cubes[2, 0, z].SelectStatus;
 			}
 			return isBingo;
 		}
@@ -124,15 +123,15 @@ namespace Dtictactoe
 		private bool YZLineJudge(int x)
 		{
 			bool isBingo = false;
-			if(cubes[x, 0, 0].Status != CubeStatus.NotSelected)
+			if(cubes[x, 0, 0].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				isBingo |= cubes[x, 0, 0].Status == cubes[x, 1, 1].Status &&
-					cubes[x, 1, 1].Status == cubes[x, 2, 2].Status;
+				isBingo |= cubes[x, 0, 0].SelectStatus == cubes[x, 1, 1].SelectStatus &&
+					cubes[x, 1, 1].SelectStatus == cubes[x, 2, 2].SelectStatus;
 			}
-			if(cubes[x, 2, 0].Status != CubeStatus.NotSelected)
+			if(cubes[x, 2, 0].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				isBingo |= cubes[x, 2, 0].Status == cubes[x, 1, 1].Status &&
-					cubes[x, 1, 1].Status == cubes[x, 0, 2].Status;
+				isBingo |= cubes[x, 2, 0].SelectStatus == cubes[x, 1, 1].SelectStatus &&
+					cubes[x, 1, 1].SelectStatus == cubes[x, 0, 2].SelectStatus;
 			}
 			return isBingo;
 		}
@@ -140,15 +139,15 @@ namespace Dtictactoe
 		private bool ZXLineJudge(int y)
 		{
 			bool isBingo = false;
-			if(cubes[0, y, 0].Status != CubeStatus.NotSelected)
+			if(cubes[0, y, 0].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				isBingo |= cubes[0, y, 0].Status == cubes[1, y, 1].Status &&
-					cubes[1, y, 1].Status == cubes[2, y, 2].Status;
+				isBingo |= cubes[0, y, 0].SelectStatus == cubes[1, y, 1].SelectStatus &&
+					cubes[1, y, 1].SelectStatus == cubes[2, y, 2].SelectStatus;
 			}
-			if(cubes[2, y, 0].Status != CubeStatus.NotSelected)
+			if(cubes[2, y, 0].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				isBingo |= cubes[2, y, 0].Status == cubes[1, y, 1].Status &&
-					cubes[1, y, 1].Status == cubes[0, y, 2].Status;
+				isBingo |= cubes[2, y, 0].SelectStatus == cubes[1, y, 1].SelectStatus &&
+					cubes[1, y, 1].SelectStatus == cubes[0, y, 2].SelectStatus;
 			}
 			return isBingo;
 		}
@@ -203,6 +202,7 @@ namespace Dtictactoe
 					}
 				}
 			}
+			Logger.DebugLine("clickCube (" + clickingX + ", " + clickingY + ", " + clickingZ + ")");
 		}
 		
 		private bool ContainStatusPrev (List<TouchData> list, TouchStatus queryStatus)
@@ -224,10 +224,12 @@ namespace Dtictactoe
 				var x = random.Next(3);
 				var y = random.Next(3);
 				var z = random.Next(3);
-				if(cubes[x,y,z].Status == CubeStatus.NotSelected)
+				if(cubes[x, y, z].SelectStatus == CubeSelectStatus.NotSelected)
 				{
-					cubes[x,y,z].Clicked(textures[cpu.order],(CubeStatus)cpu.order);
+					cubes[x, y, z].Clicked(textures[cpu.order],(CubeSelectStatus)cpu.order);
 					clickCount++;
+					clickingCube = cubes[x, y, z];
+					clickingX = x; clickingY = y; clickingZ = z;
 					return true;
 				}
 			}
@@ -236,6 +238,7 @@ namespace Dtictactoe
 		
 		public void Reset(){
 			clickCount = 0;
+			clickingCube = null;
 			for(int i = 0; i < gameSize; i++)
 			{
 				for(int j = 0; j < gameSize; j++)
@@ -259,19 +262,84 @@ namespace Dtictactoe
 		public int JudgeGame()	
 		{
 			bool isBingo = false;
-			for(int i = 0; i < gameSize; i++)
+/*			for(int i = 0; i < gameSize; i++)
 			{
 				isBingo |= XYSpheareJugde(i);
 				isBingo |= YZSpheareJugde(i);
 				isBingo |= ZXSpheareJugde(i);
-			}
+			}*/
 			/*ななめ*/
-			if(cubes[1, 1, 1].Status != CubeStatus.NotSelected)
+/*			if(cubes[1, 1, 1].SelectStatus != CubeSelectStatus.NotSelected)
 			{
-				isBingo |= (cubes[0, 0, 0].Status == cubes[1, 1, 1].Status && cubes[1, 1, 1].Status == cubes[2, 2, 2].Status)
-					|| (cubes[2, 0, 0].Status == cubes[1, 1, 1].Status && cubes[1, 1, 1].Status == cubes[0, 2, 2].Status)
-					|| (cubes[0, 2, 0].Status == cubes[1, 1, 1].Status && cubes[1, 1, 1].Status == cubes[2, 0, 2].Status)
-					|| (cubes[0, 0, 2].Status == cubes[1, 1, 1].Status && cubes[1, 1, 1].Status == cubes[2, 2, 0].Status);
+				isBingo |= (cubes[0, 0, 0].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[2, 2, 2].SelectStatus)
+					|| (cubes[2, 0, 0].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[0, 2, 2].SelectStatus)
+					|| (cubes[0, 2, 0].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[2, 0, 2].SelectStatus)
+					|| (cubes[0, 0, 2].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[2, 2, 0].SelectStatus);
+			}*/
+			isBingo |= XLineJudge(clickingY, clickingZ);
+			isBingo |= YLineJudge(clickingX, clickingZ);
+			isBingo |= ZLineJudge(clickingX, clickingY);
+			/* diagonal line on x,y-surface */
+			if((clickingX + clickingY) % 2 == 0)
+			{
+				if(clickingX == 1 || clickingY == 1)
+				{
+					isBingo |= cubes[0, 0, clickingZ].SelectStatus == cubes[clickingX, clickingY, clickingZ].SelectStatus
+						&& cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[2, 2, clickingZ].SelectStatus;
+					isBingo |= cubes[2, 0, clickingZ].SelectStatus == cubes[clickingX, clickingY, clickingZ].SelectStatus
+						&& cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[0, 2, clickingZ].SelectStatus;
+				} else {
+					/* f(x) = x * 2 + 2 mod 3を適用すると1はそのままで0が2に, 2が0になる */
+					isBingo |= cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[1, 1, clickingZ].SelectStatus
+						&& cubes[1, 1, clickingZ].SelectStatus == cubes[(clickingX * 2 + 2) % 3, (clickingY * 2 + 2) % 3, clickingZ].SelectStatus;
+				}
+			}
+			/* diagonal line on y,z-surface */
+			if((clickingY + clickingZ) % 2 == 0)
+			{
+				if(clickingY == 1 || clickingZ == 1)
+				{
+					isBingo |= cubes[clickingX, 0, 0].SelectStatus == cubes[clickingX, clickingY, clickingZ].SelectStatus
+						&& cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[clickingX, 2, 2].SelectStatus;
+					isBingo |= cubes[clickingX, 0, 2].SelectStatus == cubes[clickingX, clickingY, clickingZ].SelectStatus
+						&& cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[clickingX, 2, 0].SelectStatus;
+				} else {
+					/* f(x) = x * 2 + 2 mod 3を適用すると1はそのままで0が2に, 2が0になる */
+					isBingo |= cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[clickingX, 1, 1].SelectStatus
+						&& cubes[clickingX, 1, 1].SelectStatus == cubes[clickingX, (clickingY * 2 + 2) % 3, (clickingZ * 2 + 2) % 3].SelectStatus;
+				}
+			}
+			/* diagonal line on z,x-surface */
+			if((clickingZ + clickingX) % 2 == 0)
+			{
+				if(clickingZ == 1 || clickingX == 1)
+				{
+					isBingo |= cubes[0, clickingY, 0].SelectStatus == cubes[clickingX, clickingY, clickingZ].SelectStatus
+						&& cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[2, clickingY, 2].SelectStatus;
+					isBingo |= cubes[0, clickingY, 2].SelectStatus == cubes[clickingX, clickingY, clickingZ].SelectStatus
+						&& cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[2, clickingY, 0].SelectStatus;
+				} else {
+					/* f(x) = x * 2 + 2 mod 3を適用すると1はそのままで0が2に, 2が0になる */
+					isBingo |= cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[1, clickingY, 1].SelectStatus
+						&& cubes[1, clickingY, 1].SelectStatus == cubes[(clickingX * 2 + 2) % 3, clickingY, (clickingZ * 2 + 2) % 3].SelectStatus;
+				}
+			}
+			
+			/* diagonal line on cube */
+			if(cubes[clickingX, clickingY, clickingZ].PositionStatus == CubePositionStatus.Core)
+			{
+				isBingo |= cubes[0, 0, 0].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[2, 2, 2].SelectStatus;
+				isBingo	|= cubes[2, 0, 0].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[0, 2, 2].SelectStatus;
+				isBingo	|= cubes[0, 2, 0].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[2, 0, 2].SelectStatus;
+				isBingo |= cubes[0, 0, 2].SelectStatus == cubes[1, 1, 1].SelectStatus && cubes[1, 1, 1].SelectStatus == cubes[2, 2, 0].SelectStatus;				
+			}
+			
+			
+			if(cubes[clickingX, clickingY, clickingZ].PositionStatus == CubePositionStatus.Vertex)
+			{	
+				/* f(x) = x * 2 + 2 mod 3を適用すると1はそのままで0が2に, 2が0になる */
+				isBingo |= cubes[clickingX, clickingY, clickingZ].SelectStatus == cubes[1, 1, 1].SelectStatus &&
+							cubes[1, 1, 1].SelectStatus == cubes[(clickingX * 2 + 2) % 3, (clickingY * 2 + 2) % 3, (clickingZ * 2 + 2) % 3].SelectStatus;
 			}
 			
 			if(isBingo)
@@ -288,7 +356,7 @@ namespace Dtictactoe
 		public bool IsCubeSelected(float touchX, float touchY)
 		{
 			float minDist = float.PositiveInfinity;
-			int clickedX = 0, clickedY = 0, clickedZ = 0;
+//			int clickedX = 0, clickedY = 0, clickedZ = 0;
 			/* スクリーン上のタッチした点から画面に映し出されている範囲で一番奥の点を計算 */
 			var screenPos = new Vector4(touchX * 2, touchY * 2, 1.0f, 1.0f);
 			var touchLocalPos = Camera.worldViewProj.Inverse().Transform(screenPos);
@@ -305,7 +373,7 @@ namespace Dtictactoe
 							/* cubeが触った直線状にいる場合 */
 							if(dist < minDist){
 								minDist = dist;
-								clickedX = i; clickedY = j; clickedZ = k;
+								clickingX = i; clickingY = j; clickingZ = k;
 							}
 						}
 					}
@@ -317,10 +385,11 @@ namespace Dtictactoe
 				/* 触ったcubeなし */
 				return false;
 			} else {
-				if(cubes[clickedX, clickedY, clickedZ].Status == CubeStatus.NotSelected)
+				if(cubes[clickingX, clickingY, clickingZ].SelectStatus == CubeSelectStatus.NotSelected)
 				{
-					cubes[clickedX, clickedY, clickedZ].Clicked(textures[(int)AppMain.gameStatus], (CubeStatus)((int)AppMain.gameStatus));
+					cubes[clickingX, clickingY, clickingZ].Clicked(textures[(int)AppMain.gameStatus], (CubeSelectStatus)((int)AppMain.gameStatus));
 					clickCount++;
+					clickingCube = cubes[clickingX, clickingY, clickingZ];
 					return true;
 				} else {
 					/* クリックしたけどすでに選択済みのcubeだった場合 */
